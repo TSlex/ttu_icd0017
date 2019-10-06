@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fieldButtonSize">70dp</dimen>
-    <dimen name="barButtonSize">60dp</dimen>
+    <dimen name="fieldButtonSize">30dp</dimen>
+    <dimen name="barButtonSize">50dp</dimen>
+    <dimen name="barSize">64dp</dimen>
 </resources>

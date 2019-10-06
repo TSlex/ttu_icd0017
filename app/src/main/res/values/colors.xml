@@ -3,4 +3,10 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="barCounter">#FD0303</color>
+    <color name="barCounterBack">#000000</color>
+    <color name="border">#474747</color>
+    <color name="gameField">#000000</color>
+    <color name="gameBar">#BEBEBE</color>
 </resources>

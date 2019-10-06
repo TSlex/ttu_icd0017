@@ -3,8 +3,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/gameBar</item>
+        <item name="colorPrimaryDark">@color/border</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
@@ -16,21 +16,43 @@
     </style>
 
     <style name="FieldBackground">
-        <item name="android:background">@android:color/black</item>
+        <item name="android:background">@drawable/game_field</item>
+        <item name="android:padding">4dp</item>
         <item name="android:buttonBarStyle"/>
+    </style>
+
+    <style name="GameBar">
+        <item name="android:background">@color/gameBar</item>
+    </style>
+
+    <style name="TopBarTextHolder">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:gravity">center</item>
     </style>
 
     <style name="TopBarCounterText">
         <item name="android:fontFamily" tools:targetApi="jelly_bean">@font/digital_7_regular</item>
         <item name="android:textSize">54sp</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:gravity">center</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:textColor">@color/barCounter</item>
+        <item name="android:background">@drawable/bar_counter</item>
     </style>
 
     <style name="BarButton">
+        <item name="android:background">@drawable/bar_button_shape</item>
+        <item name="android:scaleType">centerInside</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:layout_height">@dimen/barButtonSize</item>
         <item name="android:layout_width">@dimen/barButtonSize</item>
+        <item name="android:padding">5dp</item>
+    </style>
+
+    <style name="BarButton.TopBarButton">
+        <item name="android:src">@drawable/face</item>
+    </style>
+
+    <style name="BarButton.BottomBarButton">
+        <item name="android:src">@drawable/flag</item>
     </style>
 
 </resources>

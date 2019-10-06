@@ -6,15 +6,477 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    tools:showIn="@layout/game_gui">
+    tools:showIn="@layout/game_gui"
+    android:background="@color/gameBar">
 
     <LinearLayout
         android:id="@+id/gameField"
+        style="@style/FieldBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="2dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+
+                <Button style="@style/FieldCell" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

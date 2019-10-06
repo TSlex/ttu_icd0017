@@ -2,19 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/barButtonSize"
+    android:layout_height="@dimen/barSize"
     android:orientation="horizontal"
-    tools:showIn="@layout/game_gui">
+    tools:showIn="@layout/game_gui"
+    style="@style/GameBar">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/button"
-        style="@style/BarButton"
-        android:text="" />
+    <ImageButton
+        android:id="@+id/inspectButton"
+        style="@style/BarButton.BottomBarButton"
+        android:contentDescription="inspect" />
 
     <TextView
         android:layout_width="wrap_content"

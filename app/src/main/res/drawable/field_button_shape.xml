@@ -2,9 +2,9 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <solid android:color="@color/colorPrimary" />
+    <solid android:color="@color/gameBar" />
     <stroke
-        android:color="@color/colorPrimaryDark"
+        android:color="@color/border"
         android:width="3dp" />
 
     <corners android:radius="3dp" />
