@@ -26,7 +26,8 @@
     </style>
 
     <style name="TopBarTextHolder">
-        <item name="android:layout_gravity">center_vertical</item>
+<!--        <item name="android:layout_gravity">center_vertical</item>-->
+        <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
     </style>
 

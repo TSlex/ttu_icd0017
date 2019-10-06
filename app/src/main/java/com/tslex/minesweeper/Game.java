@@ -55,6 +55,7 @@ public class Game extends AppCompatActivity {
                 int buttWidth = (gameBoard.getWidth() - GAME_FIELD_MARGIN * 2) / (isPortraitm ? HORISONTAL_COUNT : VERTICAL_COUNT);
                 int buttHeight = (gameBoard.getHeight() - GAME_FIELD_MARGIN * 2) / (isPortraitm ? VERTICAL_COUNT : HORISONTAL_COUNT);
 
+//                int buttSize = Math.min(buttWidth, buttHeight);
                 int buttSize = Math.min(buttWidth, buttHeight) - BUTTON_MARGIN * 2;
 
                 Log.d("Main", "height: " + gameBoard.getHeight() + ", width: " + gameBoard.getWidth());
@@ -66,8 +67,10 @@ public class Game extends AppCompatActivity {
 
                     for (int x = 0; x < HORISONTAL_COUNT; x++) {
 
-                        Button button = new Button(new ContextThemeWrapper(gameBoard.getContext(), R.style.FieldCell), null, 0);
+//                        Button button = new Button(new ContextThemeWrapper(gameBoard.getContext(), R.style.FieldCell), null, 0);
+                        Button button = (Button) getLayoutInflater().inflate(R.layout.field_cell, null);
                         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(buttSize, buttSize);
+
                         buttonParams.setMargins(BUTTON_MARGIN, BUTTON_MARGIN, BUTTON_MARGIN, BUTTON_MARGIN);
                         button.setLayoutParams(buttonParams);
                         row.addView(button);

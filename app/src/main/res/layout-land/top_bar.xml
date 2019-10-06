@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/statistics"
+    style="@style/GameBar"
+    android:layout_width="@dimen/barSize"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:showIn="@layout/game_gui">
+
+    <LinearLayout
+        style="@style/TopBarTextHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/timeCount"
+            style="@style/TopBarCounterText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00\n /\n00" />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/restartBtn"
+        style="@style/BarButton.TopBarButton"
+        android:contentDescription="restart" />
+
+    <LinearLayout
+        style="@style/TopBarTextHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/bombsCount"
+            style="@style/TopBarCounterText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0\n0\n0" />
+    </LinearLayout>
+
+</LinearLayout>
