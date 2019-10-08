@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button style="@style/FieldCell"></Button>
+<com.tslex.minesweeper.Cell style="@style/FieldCell" />
