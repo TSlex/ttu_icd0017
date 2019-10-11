@@ -32,6 +32,9 @@ public class Game extends AppCompatActivity {
 //        Initialize game board
         ConstraintLayout gameBoard = findViewById(R.id.gameBoard);
 
+        // Remove test field for examination
+        findViewById(R.id.testField).setVisibility(View.GONE);
+
         int orientation = this.getResources().getConfiguration().orientation;
 
         if (orientation == 1) {
