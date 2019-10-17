@@ -33,29 +33,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -63,29 +63,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -93,29 +93,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -123,29 +123,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -153,29 +153,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -183,29 +183,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -213,29 +213,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -243,29 +243,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -273,29 +273,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -303,29 +303,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -333,29 +333,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -363,29 +363,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -393,29 +393,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -423,29 +423,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
 
             <LinearLayout
@@ -453,29 +453,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
 
-                <Button style="@style/FieldCell" />
+                <com.tslex.minesweeper.Cell style="@style/FieldCell" />
             </LinearLayout>
         </LinearLayout>
 

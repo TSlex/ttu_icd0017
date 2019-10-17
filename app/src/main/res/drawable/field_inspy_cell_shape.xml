@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_pressed="false">
+        <shape>
+            <solid android:color="@color/border" />
+            <corners android:radius="3dp" />
+            <stroke android:color="@color/border" android:width="3dp" />
+        </shape>
+    </item>
+
+<!--    <item android:state_pressed="true">-->
+<!--        <shape>-->
+<!--            <solid android:color="@color/border" />-->
+<!--            <corners android:radius="3dp" />-->
+<!--&lt;!&ndash;            <stroke android:color="@color/border" android:width="3dp" />&ndash;&gt;-->
+<!--        </shape>-->
+<!--    </item>-->
+</selector>

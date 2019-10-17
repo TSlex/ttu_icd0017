@@ -11,8 +11,11 @@
     <style name="FieldCell">
         <item name="android:layout_height">@dimen/fieldButtonSize</item>
         <item name="android:layout_width">@dimen/fieldButtonSize</item>
-        <item name="android:background">@drawable/field_button_shape</item>
+        <item name="android:background">@drawable/field_closed_cell_shape</item>
         <item name="android:layout_margin">1dp</item>
+<!--        <item name="android:src">@drawable/num_6</item>-->
+        <item name="android:padding">3dp</item>
+        <item name="android:clickable">true</item>
     </style>
 
     <style name="FieldBackground">
@@ -49,7 +52,7 @@
     </style>
 
     <style name="BarButton.TopBarButton">
-        <item name="android:src">@drawable/face</item>
+        <item name="android:src">@drawable/state_default</item>
     </style>
 
     <style name="BarButton.BottomBarButton">
