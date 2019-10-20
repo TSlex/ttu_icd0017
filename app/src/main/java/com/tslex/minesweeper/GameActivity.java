@@ -1,18 +1,22 @@
 package com.tslex.minesweeper;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.util.Predicate;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -27,12 +31,21 @@ public class GameActivity extends AppCompatActivity {
 
 //    private static Cell[][] gameCells = new Cell[VERTICAL_COUNT][HORISONTAL_COUNT];
 
+    Handler handler;
 
     private GameViewModel gameViewModel;
     private Game game = null;
 
     private boolean isPortrait;
+
     private ConstraintLayout gameBoard;
+
+    private ImageButton restartButton;
+    private ImageButton inspectButton;
+    private ImageButton settingsButton;
+
+    private TextView flagsCount;
+    private TextView timer;
 
     private Vibrator vibrator;
 
@@ -43,15 +56,32 @@ public class GameActivity extends AppCompatActivity {
 
         Log.d("main", "onCreate");
 
-        findViewById(R.id.inspectButton).setOnClickListener(new View.OnClickListener() {
+        restartButton = findViewById(R.id.restartBtn);
+        inspectButton = findViewById(R.id.inspectButton);
+        settingsButton = findViewById(R.id.settingsButton);
+
+        flagsCount = findViewById(R.id.flagsCount);
+        timer = findViewById(R.id.timer);
+
+        handler = new Handler(new Handler.Callback() {
             @Override
-            public void onClick(View view) {
-                game.openAll();
+            public boolean handleMessage(@NonNull Message message) {
+                update();
+                return true;
             }
         });
 
 
-        findViewById(R.id.restartBtn).setOnClickListener(new View.OnClickListener() {
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                game.openAll();
+                game.startTimer();
+            }
+        });
+
+
+        restartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 game = gameViewModel.restartGame();
@@ -59,6 +89,14 @@ public class GameActivity extends AppCompatActivity {
                 Intent intent = getIntent();
                 finish();
                 startActivity(intent);
+            }
+        });
+
+        inspectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                game.changeInspectMode();
+                inspectButton.setImageResource(game.isInspectMode() ? R.drawable.flag : R.drawable.bomb);
             }
         });
 
@@ -72,6 +110,10 @@ public class GameActivity extends AppCompatActivity {
         this.gameViewModel = ViewModelProviders.of(this, new ModelFactory(this, VERTICAL_COUNT, HORISONTAL_COUNT)).get(GameViewModel.class);
 
         this.game = gameViewModel.getGame();
+
+//        ImageButton imageButton = (ImageButton) findViewById(R.id.inspectButton);
+//        imageButton.setImageResource(game.isInspectMode() ? R.drawable.flag : R.drawable.bomb);
+
 
 
 //        if (game == null && savedInstanceState != null && savedInstanceState.containsKey("game")){
@@ -95,32 +137,23 @@ public class GameActivity extends AppCompatActivity {
         this.isPortrait = orientation == 1;
 
         fillField(isPortrait, gameBoard);
+        update();
 
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    public void update(){
 
-        Log.d("main", "onSave");
+        game.updateInstance(this);
 
+        restartButton.setImageResource(game.getState().getImageSrc());
 
-        LinearLayout gameField = findViewById(R.id.gameField);
+        inspectButton.setImageResource(game.isInspectMode() ? R.drawable.flag : R.drawable.bomb);
 
-//        for (int y = 0; y < VERTICAL_COUNT; y++) {
-//            gameField.removeAllViews();
-//        }
+        flagsCount.setText(formatFlagsCounter(game.getFlagsCount()));
+
+        timer.setText(String.valueOf(game.getTimer()));
+
     }
-
-//    @Override
-//    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//
-//        Log.d("main", "onRestore");
-//        game = savedInstanceState.getParcelable("game");
-
-//    }
-
 
     private void fillField(final boolean isPortrait, ConstraintLayout gameBoard) {
 
@@ -204,5 +237,25 @@ public class GameActivity extends AppCompatActivity {
 
     public boolean compare(boolean isPortrait,int a, int b){
         return isPortrait ? a < b : a > b;
+    }
+
+    public String formatFlagsCounter(int count){
+        String raw = String.valueOf(Math.abs(count) <= 99 ? count : count < 0 ? "=99" : "^99");
+        String result = "";
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < 3 - raw.length(); i++){
+            builder.append("0");
+        }
+
+        builder.append(raw);
+
+        result = builder.toString();
+
+        if (!isPortrait){
+            return TextUtils.join("\n", TextUtils.split(result.trim(), "")).trim();
+        }
+
+        return result;
     }
 }

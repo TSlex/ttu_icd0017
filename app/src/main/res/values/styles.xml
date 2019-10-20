@@ -40,6 +40,7 @@
         <item name="android:padding">4dp</item>
         <item name="android:textColor">@color/barCounter</item>
         <item name="android:background">@drawable/bar_counter</item>
+        <item name="android:gravity">center</item>
     </style>
 
     <style name="BarButton">
@@ -55,8 +56,12 @@
         <item name="android:src">@drawable/state_default</item>
     </style>
 
-    <style name="BarButton.BottomBarButton">
-        <item name="android:src">@drawable/flag</item>
+    <style name="BarButton.InspectBarButton">
+        <item name="android:src">@drawable/bomb</item>
+    </style>
+
+    <style name="BarButton.SettingsBarButton">
+        <item name="android:src">@drawable/settings</item>
     </style>
 
 </resources>

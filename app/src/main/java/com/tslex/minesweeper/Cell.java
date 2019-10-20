@@ -9,9 +9,12 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView {
 
     private int yPosition = -1;
     private int xPosition = -1;
+
     private CellState state = CellState.UNDEFINED;
-    private boolean isOpened = false;
     private Game game;
+
+    private boolean isOpened = false;
+    private boolean isInspected = false;
 
     public Cell(Context context) {
         super(context);
@@ -28,19 +31,45 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN){
+        if (game.isGameOver()){
+//            return super.onTouchEvent(event);
+            return false;
+        }
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+            if (isOpened) {
+                inspyOthers(true);
+                Log.d("CELL", "! I am ispying others");
+
+            } else if (game.isInspectMode() && !isInspected) {
+                inspectMe(true);
+
+                game.decreaseFlagCounter();
+                Log.d("CELL", "! I am now inspected");
+
+            } else if (game.isInspectMode() && isInspected) {
+                inspectMe(false);
+
+                game.increaseFlagCounter();
+                Log.d("CELL", "! Not inspected anymore");
+            } else if (!game.isInspectMode() && !isInspected) {
+                openCell();
+                Log.d("CELL", "! I am opened now");
+            }
+
             game.vibrate();
-            openCell();
-//            Log.d(toString(), "hello");
+            game.updateActivity();
+
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            if (isOpened) {
+                inspyOthers(false);
+            }
         }
 
-        else if (event.getAction() == MotionEvent.ACTION_UP){
-            inspyOthers(false);
-        }
-
-//        Log.d("Touched", "onTouchEvent: " + event.getAction());
-
-//        Log.d("TMP", String.valueOf(tmp));
+        Log.d("CELL", "isOpened: " + isOpened);
+        Log.d("CELL", "isInspected: " + isInspected);
+        Log.d("CELL", "isInspectMode: " + game.isInspectMode());
 
         return super.onTouchEvent(event);
     }
@@ -62,17 +91,26 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView {
     }
 
     public void update() {
-        if (isOpened) {
+
+        if (isInspected) {
+            super.setImageResource(CellState.FLAG.getImageSrc());
+        } else if (isOpened) {
             super.setImageResource(state.getImageSrc());
         } else super.setImageResource(CellState.UNDEFINED.getImageSrc());
 
-        if (isOpened && state == CellState.BOMD){
+        if (isOpened && state == CellState.BOMD) {
             super.setBackgroundResource(R.drawable.field_bomb_cell_shape);
         }
 
-        if (isOpened && state == CellState.UNDEFINED){
+        if (isOpened && state != CellState.BOMD && state != CellState.UNDEFINED) {
+            super.setBackgroundResource(R.drawable.field_closed_cell_shape);
+        }
+
+        if (isOpened && state == CellState.UNDEFINED) {
             super.setBackgroundResource(R.drawable.field_empty_cell_shape);
         }
+
+        Log.d("CELL", "MY STATE IS: " + state.name());
     }
 
     public void setState(CellState state) {
@@ -92,31 +130,47 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView {
         this.game = game;
     }
 
-    public void openCell(){
+    public void openCell() {
         if (!isOpened) {
             isOpened = true;
+            inspectMe(false);
             game.openCell(yPosition, xPosition);
             update();
         }
-        else
-            inspyOthers(true);
+        if (game.isGameOver()){
+            return;
+        }
+        if (game.checkBoard()) {
+            game.gameOver(GameState.WIN);
+        } else if (state == CellState.BOMD) {
+            game.gameOver(GameState.LOSE);
+        }
     }
 
-    public void inspyOthers(boolean bool){
+    public void inspectMe(boolean inspect) {
+        isInspected = inspect;
+
+        update();
+    }
+
+    public void inspyOthers(boolean bool) {
         game.inspy(yPosition, xPosition, bool);
     }
 
-    public void inspyingMe(boolean bool){
-        if (bool){
+    public void inspyingMe(boolean bool) {
+        if (bool) {
             super.setBackgroundResource(R.drawable.field_inspy_cell_shape);
-        }
-        else {
+        } else {
             super.setBackgroundResource(R.drawable.field_closed_cell_shape);
         }
     }
 
     public boolean isOpened() {
         return isOpened;
+    }
+
+    public boolean isInspected() {
+        return isInspected;
     }
 
     @Override

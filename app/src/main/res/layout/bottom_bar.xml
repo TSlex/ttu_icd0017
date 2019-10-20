@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout2"
+    style="@style/GameBar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/barSize"
     android:orientation="horizontal"
-    tools:showIn="@layout/game_gui"
-    style="@style/GameBar">
+    tools:showIn="@layout/game_gui">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
+    <ImageButton
+        android:id="@+id/settingsButton"
+        style="@style/BarButton.SettingsBarButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:contentDescription="inspect"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/inspectButton"
-        style="@style/BarButton.BottomBarButton"
-        android:contentDescription="inspect" />
+        style="@style/BarButton.InspectBarButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:contentDescription="inspect"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

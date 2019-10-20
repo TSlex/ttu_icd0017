@@ -1,11 +1,24 @@
 package com.tslex.minesweeper
 
 import android.annotation.SuppressLint
+import android.os.Message
 import android.util.Log
+import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
+import java.util.logging.Handler
+import kotlin.concurrent.schedule
 
-class Game(val instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_COUNT: Int) {
+class Game(var instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_COUNT: Int) {
 
-    var bombsCount = VERTICAL_COUNT * HORISONTAL_COUNT / 7
+    private var bombsCount = calculateBombCount()
+
+    var flagsCount = bombsCount
+
+    var timer = 0
+
+    private var inspectMode: Boolean = false
 
     private var gameCells: Array<Array<Cell>> =
             Array(VERTICAL_COUNT)
@@ -13,6 +26,10 @@ class Game(val instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
                 Array(HORISONTAL_COUNT)
                 { instance.layoutInflater.inflate(R.layout.field_cell, null) as Cell }
             }
+
+    private var gameState: GameState = GameState.NOT_STARTED
+
+    private var gameOver: Boolean = false
 
     @SuppressLint("ClickableViewAccessibility")
     fun initCells() {
@@ -44,32 +61,20 @@ class Game(val instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
 
     fun openCell(y: Int, x: Int) {
 
-        val upLeft = safetyGetCell(y - 1, x - 1)
-        val up = safetyGetCell(y - 1, x)
-        val upRight = safetyGetCell(y - 1, x + 1)
-        val left = safetyGetCell(y, x - 1)
-        val right = safetyGetCell(y, x + 1)
-        val downLeft = safetyGetCell(y + 1, x - 1)
-        val down = safetyGetCell(y + 1, x)
-        val downRight = safetyGetCell(y + 1, x + 1)
-
         val currentCell = gameCells[y][x]
 
-        val neightbours: Array<Cell?> = arrayOf(upLeft, up, upRight, left, right, downLeft, down, downRight)
+        val neightbours = getNeighbors(y, x)
 
         var bombCounter = 0
 
         for (cell in neightbours) {
-            if (cell != null && cell.state == CellState.BOMD)
+            if (cell.state == CellState.BOMD)
                 bombCounter++
         }
 
         if (bombCounter == 0 && currentCell.state != CellState.BOMD) {
-            for (cell in neightbours) {
-                if (cell != null && !cell.isOpened) {
-                    cell.openCell()
-                }
-            }
+            openOthersCells(neightbours)
+
         } else if (currentCell.state != CellState.BOMD) {
             currentCell.state = CellState.getStateByNumber(bombCounter)
         }
@@ -78,6 +83,38 @@ class Game(val instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
 
     fun inspy(y: Int, x: Int, bool: Boolean) {
 
+        val currentCell = gameCells[y][x]
+
+        val neightbours = getNeighbors(y, x)
+
+
+        var bombsAround = 0
+        var flagsAroung = 0
+
+        for (cell in neightbours) {
+            if (!cell.isOpened && !cell.isInspected)
+                cell.inspyingMe(bool)
+
+            if (cell.isInspected) {
+                flagsAroung++
+            }
+
+            if (cell.state == CellState.BOMD) {
+                bombsAround++
+            }
+        }
+
+        Log.d("GAME", "inspy: $bool")
+        Log.d("GAME", "bombsAround: $bombsAround")
+        Log.d("GAME", "flagsAroung: $flagsAroung")
+        Log.d("GAME", "condition: " + (!bool && bombsAround > 0 && bombsAround == flagsAroung))
+
+        if (!bool && bombsAround > 0 && bombsAround == flagsAroung) {
+            openOthersCells(neightbours)
+        }
+    }
+
+    fun getNeighbors(y: Int, x: Int): List<Cell> {
         val upLeft = safetyGetCell(y - 1, x - 1)
         val up = safetyGetCell(y - 1, x)
         val upRight = safetyGetCell(y - 1, x + 1)
@@ -87,18 +124,19 @@ class Game(val instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
         val down = safetyGetCell(y + 1, x)
         val downRight = safetyGetCell(y + 1, x + 1)
 
-        val neightbours: Array<Cell?> = arrayOf(upLeft, up, upRight, left, right, downLeft, down, downRight)
+        return listOfNotNull(upLeft, up, upRight, left, right, downLeft, down, downRight)
+    }
 
+    fun openOthersCells(neightbours: List<Cell>) {
         for (cell in neightbours) {
-            if (cell != null && !cell.isOpened)
-                cell.inspyingMe(bool)
+            if (!cell.isOpened && !cell.isInspected) {
+                cell.openCell()
+            }
         }
     }
 
     fun fillFieldWithBombs() {
-
         val random = java.util.Random()
-
 
         while (bombsCount > 0) {
             val randY = random.nextInt(VERTICAL_COUNT)
@@ -125,8 +163,87 @@ class Game(val instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
         }
     }
 
+    fun checkBoard(): Boolean {
+        for (y in 0 until VERTICAL_COUNT) {
+            for (x in 0 until HORISONTAL_COUNT) {
+
+                val cell = gameCells[y][x]
+
+                if (!cell.isOpened || cell.isInspected && cell.state != CellState.BOMD)
+                    return false
+
+            }
+        }
+        return true
+    }
+
+    fun gameOver(state: GameState) {
+        gameState = state
+        gameOver = true
+        openAll()
+        updateActivity()
+    }
+
+    fun updateActivity() {
+        instance.update()
+    }
+
+    fun isGameOver(): Boolean {
+        return gameOver
+    }
+
     fun vibrate() {
         instance.vibrate()
+    }
+
+    fun isInspectMode(): Boolean {
+        return inspectMode
+    }
+
+    fun changeInspectMode() {
+        inspectMode = !inspectMode
+    }
+
+    fun getState(): GameState {
+        return gameState
+    }
+
+    fun calculateBombCount(): Int {
+
+        val bombCount = VERTICAL_COUNT * HORISONTAL_COUNT / 7
+
+        if (bombCount > 0) {
+            return bombCount
+        } else return 1
+    }
+
+    fun increaseFlagCounter() {
+        flagsCount++
+    }
+
+    fun decreaseFlagCounter() {
+        flagsCount--
+    }
+
+    fun updateInstance(activity: GameActivity) {
+        instance = activity
+    }
+
+    fun startTimer() {
+
+//        Timer().schedule(object : TimerTask() {
+//            override fun run() {
+//                timer++
+//                instance.handler.handleMessage(Message())
+//            }
+//        }, 1000)
+
+        val scheduledExecutorService: ScheduledExecutorService = Executors.newScheduledThreadPool(2)
+        scheduledExecutorService.scheduleAtFixedRate({
+//            Log.d("TIMER", "HI :)")
+            timer++
+            instance.update()
+        }, 0, 1, TimeUnit.SECONDS)
     }
 
     override fun toString(): String {

@@ -16,7 +16,7 @@
         style="@style/TopBarTextHolder">
 
         <TextView
-            android:id="@+id/bombsCount"
+            android:id="@+id/flagsCount"
             style="@style/TopBarCounterText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
         style="@style/TopBarTextHolder">
 
         <TextView
-            android:id="@+id/timeCount"
+            android:id="@+id/timer"
             style="@style/TopBarCounterText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
