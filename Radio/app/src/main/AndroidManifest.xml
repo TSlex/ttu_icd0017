@@ -21,7 +21,9 @@
             android:enabled="true"
             android:exported="true"></service>
 
-        <activity android:name=".RadioUI">
+        <activity android:name=".RadioUI"
+            android:screenOrientation="portrait">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

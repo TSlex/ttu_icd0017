@@ -169,7 +169,7 @@ class Game(var instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
 
                 val cell = gameCells[y][x]
 
-                if (!cell.isOpened || cell.isInspected && cell.state != CellState.BOMD)
+                if (!cell.isOpened && !cell.isInspected || flagsCount != 0)
                     return false
 
             }
@@ -180,7 +180,9 @@ class Game(var instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
     fun gameOver(state: GameState) {
         gameState = state
         gameOver = true
-        openAll()
+        if (state == GameState.LOSE) {
+            openAll()
+        }
         updateActivity()
     }
 
@@ -240,7 +242,7 @@ class Game(var instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
 
         val scheduledExecutorService: ScheduledExecutorService = Executors.newScheduledThreadPool(2)
         scheduledExecutorService.scheduleAtFixedRate({
-//            Log.d("TIMER", "HI :)")
+            //            Log.d("TIMER", "HI :)")
             timer++
             instance.update()
         }, 0, 1, TimeUnit.SECONDS)

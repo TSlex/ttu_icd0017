@@ -1,5 +1,6 @@
 package com.tslex.radio;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -14,6 +15,13 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
+import java.util.Arrays;
+
 public class RadioUI extends AppCompatActivity {
 
     private static String TAG = RadioUI.class.getSimpleName();
@@ -23,10 +31,11 @@ public class RadioUI extends AppCompatActivity {
 
     private PlayerStatus status = PlayerStatus.PLAYER_STATUS_STOPPED;
 
+    private WebReqHandler handler;
 
     private Button playButton;
-    private TextView animeTittle;
-    private TextView songTittle;
+    private TextView animeTitle;
+    private TextView songTitle;
     private ProgressBar progressBar;
 
     @Override
@@ -35,14 +44,15 @@ public class RadioUI extends AppCompatActivity {
         setContentView(R.layout.radio_ui);
 
         playButton = findViewById(R.id.playButton);
-        animeTittle = findViewById(R.id.animeTittle);
-        songTittle = findViewById(R.id.songTittle);
+        animeTitle = findViewById(R.id.animeTittle);
+        songTitle = findViewById(R.id.songTittle);
         progressBar = findViewById(R.id.progressBar);
 
         intentFilter.addAction(IntentActions.INTENT_PLAYER_PLAYING.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_BUFFERING.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_STOPPED.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_BUFFERING_PROGRESS.getAction());
+        intentFilter.addAction(IntentActions.INTENT_META_UPDATE.getAction());
     }
 
     @Override
@@ -51,6 +61,7 @@ public class RadioUI extends AppCompatActivity {
         Log.d(TAG, "onResume");
 
         LocalBroadcastManager.getInstance(this).registerReceiver(localReceiver, intentFilter);
+        updateUI();
     }
 
     public void buttonClick(View view) {
@@ -63,9 +74,44 @@ public class RadioUI extends AppCompatActivity {
                         .sendBroadcast(new Intent(IntentActions.INTENT_UI_STOP.getAction()));
                 break;
             case PLAYER_STATUS_STOPPED:
+                //start stream
                 startService(new Intent(this, RadioService.class));
-                break;
+            break;
         }
+    }
+
+    private void doMetaRequest(){
+        handler = WebReqHandler.getInstance(this);
+        handler.getRequestQueue();
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                URLS.ANISON_META.getUrl(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        String[] raw = response.split("<[^<>]*>");
+                        String animeTitleText = raw[raw.length - 3].trim();
+                        String songTitleText = raw[raw.length - 2].split(";")[1].trim();
+
+                        Log.d(TAG, Arrays.toString(raw));
+                        Log.d(TAG, "Anime Title:" + animeTitleText);
+                        Log.d(TAG, "Song Title:" + songTitleText);
+
+                        animeTitle.setText(animeTitleText);
+                        songTitle.setText(songTitleText);
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+
+        handler.addToRequestQueue(request);
     }
 
     private void updateUI() {
@@ -80,6 +126,33 @@ public class RadioUI extends AppCompatActivity {
                 playButton.setText("PLAY");
                 break;
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+
+//        Log.d(TAG, "onRestoreInstanceState");
+//        outState.putInt("test", 1);
+
+        outState.putSerializable("status", status);
+
+        outState.putString("animeTitle", String.valueOf(animeTitle.getText()));
+        outState.putSerializable("songTitle", String.valueOf(songTitle.getText()));
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+
+//        Log.d(TAG, "onRestoreInstanceState: " + savedInstanceState.containsKey("test"));
+
+        status = (PlayerStatus) savedInstanceState.getSerializable("status");
+
+        animeTitle.setText(savedInstanceState.getString("animeTitle"));
+        songTitle.setText(savedInstanceState.getString("songTitle"));
+
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     private class ActivityBroadcastReceiver extends BroadcastReceiver {
@@ -104,18 +177,13 @@ public class RadioUI extends AppCompatActivity {
 
                     status = PlayerStatus.PLAYER_STATUS_STOPPED;
 
-                } else if (action.equals(IntentActions.INTENT_PLAYER_BUFFERING_PROGRESS.getAction())) {
+                } else if (action.equals(IntentActions.INTENT_META_UPDATE.getAction())) {
 
-//                    progressBar.setProgress(Integer.parseInt(intent.getStringExtra("progress")));
-                    Log.d(TAG, "Reseived: " + intent.getStringExtra("progress"));
-                    progressBar.setProgress(100);
+                    doMetaRequest();
                 }
 
-
                 updateUI();
-
             }
-
         }
     }
 }

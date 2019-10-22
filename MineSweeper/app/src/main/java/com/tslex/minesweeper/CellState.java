@@ -5,6 +5,7 @@ import android.util.Log;
 public enum CellState {
 
     BOMD(R.drawable.bomb, -1),
+    TRIGGERED_BOMD (R.drawable.bomb, -1),
     FLAG(R.drawable.flag, -1),
     NUM_1(R.drawable.num_1, 1),
     NUM_2(R.drawable.num_2, 2),

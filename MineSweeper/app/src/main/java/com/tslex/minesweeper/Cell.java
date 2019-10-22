@@ -31,8 +31,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if (game.isGameOver()){
-//            return super.onTouchEvent(event);
+        if (game.isGameOver() && event.getAction() == MotionEvent.ACTION_DOWN){
             return false;
         }
 
@@ -64,6 +63,10 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView {
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             if (isOpened) {
                 inspyOthers(false);
+            }
+
+            if (game.checkBoard()) {
+                game.gameOver(GameState.WIN);
             }
         }
 
@@ -140,9 +143,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView {
         if (game.isGameOver()){
             return;
         }
-        if (game.checkBoard()) {
-            game.gameOver(GameState.WIN);
-        } else if (state == CellState.BOMD) {
+        if (state == CellState.BOMD) {
             game.gameOver(GameState.LOSE);
         }
     }

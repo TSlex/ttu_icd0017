@@ -11,6 +11,8 @@ public enum IntentActions {
     INTENT_PLAYER_BUFFERING_PROGRESS    ("radio.player.buffering.progress"),
 
     INTENT_UI_STOP                      ("radio.ui.stop"),
+
+    INTENT_META_UPDATE                   ("radio.meta.update"),
     ;
 
     private final String action;

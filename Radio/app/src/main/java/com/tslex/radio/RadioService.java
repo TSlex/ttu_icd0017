@@ -5,12 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
-import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -19,20 +15,24 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class RadioService extends Service implements
         MediaPlayer.OnCompletionListener,
         MediaPlayer.OnErrorListener,
         MediaPlayer.OnPreparedListener, MediaPlayer.OnBufferingUpdateListener {
 
-    private static String TAG = RadioUI.class.getSimpleName();
+    private static String TAG = RadioService.class.getSimpleName();
 
 //    private final String streamPath = "http://pool.anison.fm:9000/AniSonFM(320)";
+    private final String streamPath = URLS.ANISON_STREAM_128.getUrl();
 //    private final String streamPath = "http://sky.babahhcdn.com/rrap";
-    private final String streamPath = "http://airspectrum.cdnstream1.com:8114/1648_128";
+//    private final String streamPath = "http://airspectrum.cdnstream1.com:8114/1648_128";
 
-    private ServiceBroadcastReceiver localReceiver = new ServiceBroadcastReceiver();
+    private ScheduledExecutorService metaExecutorService;
+
     private IntentFilter intentFilter = new IntentFilter();
+    private ServiceBroadcastReceiver localReceiver = new ServiceBroadcastReceiver();
 
     private MediaPlayer player;
 //    private MediaPlayer player = new MediaPlayer();
@@ -99,9 +99,28 @@ public class RadioService extends Service implements
         LocalBroadcastManager.getInstance(getApplicationContext())
                 .registerReceiver(localReceiver, intentFilter);
 
+
         player.prepareAsync();
 
         return START_STICKY;
+    }
+
+    private void startMetaUpdate(){
+        metaExecutorService = Executors.newScheduledThreadPool(1);
+
+        metaExecutorService.scheduleAtFixedRate(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "Meta is Updating");
+                        LocalBroadcastManager.getInstance(getApplicationContext())
+                                .sendBroadcast(new Intent(IntentActions.INTENT_META_UPDATE.getAction()));
+                    }
+                },
+                0,
+                2,
+                TimeUnit.SECONDS
+        );
     }
 
     @Override
@@ -130,6 +149,8 @@ public class RadioService extends Service implements
 
         player.start();
 
+        startMetaUpdate();
+
         LocalBroadcastManager.getInstance(getApplicationContext())
                 .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_PLAYING.getAction()));
     }
@@ -149,6 +170,7 @@ public class RadioService extends Service implements
 
             if (action != null && action.equals(IntentActions.INTENT_UI_STOP.getAction())){
                 player.stop();
+                metaExecutorService.shutdown();
                 LocalBroadcastManager.getInstance(getApplicationContext())
                         .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_STOPPED.getAction()));
             }
