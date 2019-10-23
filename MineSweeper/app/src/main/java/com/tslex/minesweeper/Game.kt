@@ -188,7 +188,9 @@ class Game(var instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
     }
 
     fun gameOver(state: GameState) {
-        TimerExecutorService!!.shutdown()
+        if (TimerExecutorService != null){
+            TimerExecutorService!!.shutdown()
+        }
         gameState = state
         gameOver = true
         if (state == GameState.LOSE) {
