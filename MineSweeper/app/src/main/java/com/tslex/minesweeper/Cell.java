@@ -32,6 +32,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView {
     public boolean onTouchEvent(MotionEvent event) {
 
         if (game.isGameOver() && event.getAction() == MotionEvent.ACTION_DOWN){
+            Log.d("CELL", "GAME OVER: " + game.getState().name());
             return false;
         }
 
@@ -61,11 +62,16 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView {
             game.updateActivity();
 
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            if (game.getState() == GameState.NOT_STARTED){
+                game.startGame();
+            }
+
             if (isOpened) {
                 inspyOthers(false);
             }
 
-            if (game.checkBoard()) {
+            if (game.getState() != GameState.LOSE && game.checkBoard()) {
                 game.gameOver(GameState.WIN);
             }
         }

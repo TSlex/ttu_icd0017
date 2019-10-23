@@ -4,8 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -28,6 +32,9 @@ public class GameActivity extends AppCompatActivity {
     private static final int GAME_FIELD_MARGIN = 10;
 
     private static final int BOMBS_COUNT = 3;
+
+    private UIBroadcastReceiver localReceiver = new UIBroadcastReceiver();
+    private IntentFilter intentFilter = new IntentFilter();
 
 //    private static Cell[][] gameCells = new Cell[VERTICAL_COUNT][HORISONTAL_COUNT];
 
@@ -56,6 +63,8 @@ public class GameActivity extends AppCompatActivity {
 
         Log.d("main", "onCreate");
 
+        intentFilter.addAction("ui.update");
+
         restartButton = findViewById(R.id.restartBtn);
         inspectButton = findViewById(R.id.inspectButton);
         settingsButton = findViewById(R.id.settingsButton);
@@ -75,8 +84,7 @@ public class GameActivity extends AppCompatActivity {
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                game.openAll();
-                game.startTimer();
+//                game.startTimer();
             }
         });
 
@@ -141,6 +149,12 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(localReceiver, intentFilter);
+        super.onResume();
+    }
+
     public void update(){
 
         game.updateInstance(this);
@@ -151,7 +165,7 @@ public class GameActivity extends AppCompatActivity {
 
         flagsCount.setText(formatFlagsCounter(game.getFlagsCount()));
 
-        timer.setText(String.valueOf(game.getTimer()));
+        timer.setText(formatTimer(game.getTimer()));
 
     }
 
@@ -257,5 +271,33 @@ public class GameActivity extends AppCompatActivity {
         }
 
         return result;
+    }
+
+    public String formatTimer(int timer){
+        int raw = Math.abs(timer) <= 5999 ? timer : 5999;
+
+        int seconds = raw % 60;
+        int minuts = (raw - seconds) / 60;
+
+        String minutsPart = minuts == 0 ? "00" : minuts > 9 ? String.valueOf(minuts) : "0" + minuts;
+        String secondsPart = seconds == 0 ? "00" : seconds > 9 ? String.valueOf(seconds) : "0" + seconds;
+
+        return minutsPart + ":" + secondsPart;
+    }
+
+    public class UIBroadcastReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String action = intent.getAction();
+
+            if (action != null) {
+
+                if (action.equals("ui.update")) {
+                    update();
+                }
+            }
+        }
     }
 }

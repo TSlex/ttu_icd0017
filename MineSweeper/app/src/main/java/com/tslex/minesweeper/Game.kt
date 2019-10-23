@@ -1,16 +1,16 @@
 package com.tslex.minesweeper
 
 import android.annotation.SuppressLint
-import android.os.Message
+import android.content.Intent
 import android.util.Log
-import java.util.*
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
-import java.util.logging.Handler
-import kotlin.concurrent.schedule
 
 class Game(var instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_COUNT: Int) {
+
+    private var TimerExecutorService: ScheduledExecutorService? = null
 
     private var bombsCount = calculateBombCount()
 
@@ -30,6 +30,15 @@ class Game(var instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
     private var gameState: GameState = GameState.NOT_STARTED
 
     private var gameOver: Boolean = false
+
+    fun startGame(){
+        gameState = GameState.STARTED
+        startTimer()
+    }
+
+    fun stopGame(){
+        TimerExecutorService?.shutdown()
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     fun initCells() {
@@ -169,15 +178,17 @@ class Game(var instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
 
                 val cell = gameCells[y][x]
 
-                if (!cell.isOpened && !cell.isInspected || flagsCount != 0)
+                if (!cell.isOpened && cell.state != CellState.BOMD) {
                     return false
 
+                }
             }
         }
         return true
     }
 
     fun gameOver(state: GameState) {
+        TimerExecutorService!!.shutdown()
         gameState = state
         gameOver = true
         if (state == GameState.LOSE) {
@@ -240,12 +251,21 @@ class Game(var instance: GameActivity, val VERTICAL_COUNT: Int, val HORISONTAL_C
 //            }
 //        }, 1000)
 
-        val scheduledExecutorService: ScheduledExecutorService = Executors.newScheduledThreadPool(2)
-        scheduledExecutorService.scheduleAtFixedRate({
-            //            Log.d("TIMER", "HI :)")
-            timer++
-            instance.update()
-        }, 0, 1, TimeUnit.SECONDS)
+        if (TimerExecutorService != null && !TimerExecutorService!!.isShutdown){
+            return
+        }
+
+        TimerExecutorService = Executors.newScheduledThreadPool(1)
+        TimerExecutorService!!.scheduleAtFixedRate(
+                {
+                    Log.d("TIMER", "HI :) $timer")
+
+                    LocalBroadcastManager.getInstance(instance)
+                            .sendBroadcast(Intent("ui.update"))
+
+                    timer++
+                },
+                0, 1, TimeUnit.SECONDS)
     }
 
     override fun toString(): String {

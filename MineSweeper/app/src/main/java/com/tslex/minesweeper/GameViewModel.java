@@ -26,6 +26,7 @@ public class GameViewModel extends ViewModel {
 
     public Game restartGame() {
         if (game != null) {
+            game.stopGame();
             game = new Game(activity, verticalCount, horisontalCount);
             game.initCells();
         }
