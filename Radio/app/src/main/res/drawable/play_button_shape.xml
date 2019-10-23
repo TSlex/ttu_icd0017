@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <ripple android:color="@color/colorPrimaryDark" tools:targetApi="lollipop">
+        <ripple android:color="@color/anisonPurple" tools:targetApi="lollipop">
             <item>
                 <shape android:shape="oval">
                 <solid android:color="@color/anisonYellow" />

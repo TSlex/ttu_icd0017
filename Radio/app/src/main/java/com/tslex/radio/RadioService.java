@@ -30,6 +30,7 @@ public class RadioService extends Service implements
 //    private final String streamPath = "http://airspectrum.cdnstream1.com:8114/1648_128";
 
     private ScheduledExecutorService metaExecutorService;
+    private ScheduledExecutorService animationExecutorService;
 
     private IntentFilter intentFilter = new IntentFilter();
     private ServiceBroadcastReceiver localReceiver = new ServiceBroadcastReceiver();
@@ -88,6 +89,14 @@ public class RadioService extends Service implements
     }
 
     @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+//        metaExecutorService.shutdown();
+//        animationExecutorService.shutdown();
+        super.onDestroy();
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
 
@@ -103,6 +112,24 @@ public class RadioService extends Service implements
         player.prepareAsync();
 
         return START_STICKY;
+    }
+
+    private void startAnimationPlayer(){
+        animationExecutorService = Executors.newScheduledThreadPool(1);
+
+        metaExecutorService.scheduleAtFixedRate(
+                new Runnable() {
+                    @Override
+                    public void run() {
+//                        Log.d(TAG, "Meta is Updating");
+                        LocalBroadcastManager.getInstance(getApplicationContext())
+                                .sendBroadcast(new Intent(IntentActions.INTENT_ANIM_PLAY.getAction()));
+                    }
+                },
+                0,
+                500,
+                TimeUnit.MILLISECONDS
+        );
     }
 
     private void startMetaUpdate(){
@@ -150,6 +177,7 @@ public class RadioService extends Service implements
         player.start();
 
         startMetaUpdate();
+        startAnimationPlayer();
 
         LocalBroadcastManager.getInstance(getApplicationContext())
                 .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_PLAYING.getAction()));

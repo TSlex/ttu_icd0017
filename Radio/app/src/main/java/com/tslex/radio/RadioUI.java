@@ -11,6 +11,8 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,16 +40,21 @@ public class RadioUI extends AppCompatActivity {
     private TextView songTitle;
     private ProgressBar progressBar;
 
+    private Animation pulse;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.radio_ui);
 
+        pulse = AnimationUtils.loadAnimation(this, R.anim.play_button_anim);
+
         playButton = findViewById(R.id.playButton);
+
         animeTitle = findViewById(R.id.animeTittle);
         songTitle = findViewById(R.id.songTittle);
-        progressBar = findViewById(R.id.progressBar);
 
+        progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
         intentFilter.addAction(IntentActions.INTENT_PLAYER_PLAYING.getAction());
@@ -55,6 +62,13 @@ public class RadioUI extends AppCompatActivity {
         intentFilter.addAction(IntentActions.INTENT_PLAYER_STOPPED.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_BUFFERING_PROGRESS.getAction());
         intentFilter.addAction(IntentActions.INTENT_META_UPDATE.getAction());
+        intentFilter.addAction(IntentActions.INTENT_ANIM_PLAY.getAction());
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
     }
 
     @Override
@@ -120,15 +134,27 @@ public class RadioUI extends AppCompatActivity {
         switch (status) {
             case PLAYER_STATUS_PLAYING:
                 playButton.setText("STOP");
+                playButton.startAnimation(pulse);
+
                 progressBar.setVisibility(View.INVISIBLE);
+
+                animeTitle.setVisibility(View.VISIBLE);
+                songTitle.setVisibility(View.VISIBLE);
                 break;
+
             case PLAYER_STATUS_BUFFERING:
                 playButton.setText("BUFFERING");
                 progressBar.setVisibility(View.VISIBLE);
                 break;
+
             case PLAYER_STATUS_STOPPED:
                 playButton.setText("PLAY");
+                playButton.clearAnimation();
+
                 progressBar.setVisibility(View.INVISIBLE);
+
+                animeTitle.setVisibility(View.INVISIBLE);
+                songTitle.setVisibility(View.INVISIBLE);
                 break;
         }
     }

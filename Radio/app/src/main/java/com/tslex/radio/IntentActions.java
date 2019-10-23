@@ -13,6 +13,7 @@ public enum IntentActions {
     INTENT_UI_STOP                      ("radio.ui.stop"),
 
     INTENT_META_UPDATE                   ("radio.meta.update"),
+    INTENT_ANIM_PLAY                ("radio.anim.play"),
     ;
 
     private final String action;
