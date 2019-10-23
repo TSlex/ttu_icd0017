@@ -19,7 +19,7 @@
         <TextView
             android:id="@+id/flagsCount"
             style="@style/TopBarCounterText"
-            android:layout_width="85dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="000" />
     </LinearLayout>
@@ -39,9 +39,9 @@
         <TextView
             android:id="@+id/timer"
             style="@style/TopBarCounterText"
-            android:layout_width="120dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:01"
+            android:text="00:00"
             app:autoSizeTextType="none" />
 
     </LinearLayout>
