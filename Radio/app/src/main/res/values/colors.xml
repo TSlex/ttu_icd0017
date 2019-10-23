@@ -3,4 +3,11 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    
+    <color name="anisonYellow">#FFC804</color>
+    <color name="anisonPurple">#672E91</color>
+    <color name="anisonGreen">#ACD373</color>
+    <color name="anisonGrad1">#FB7691</color>
+    <color name="anisonGrad2">#F9D278</color>
+    <color name="anisonBlack">#1E1E1E</color>
 </resources>

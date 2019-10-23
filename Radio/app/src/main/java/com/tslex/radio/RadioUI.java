@@ -48,6 +48,8 @@ public class RadioUI extends AppCompatActivity {
         songTitle = findViewById(R.id.songTittle);
         progressBar = findViewById(R.id.progressBar);
 
+        progressBar.setVisibility(View.INVISIBLE);
+
         intentFilter.addAction(IntentActions.INTENT_PLAYER_PLAYING.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_BUFFERING.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_STOPPED.getAction());
@@ -118,12 +120,15 @@ public class RadioUI extends AppCompatActivity {
         switch (status) {
             case PLAYER_STATUS_PLAYING:
                 playButton.setText("STOP");
+                progressBar.setVisibility(View.INVISIBLE);
                 break;
             case PLAYER_STATUS_BUFFERING:
                 playButton.setText("BUFFERING");
+                progressBar.setVisibility(View.VISIBLE);
                 break;
             case PLAYER_STATUS_STOPPED:
                 playButton.setText("PLAY");
+                progressBar.setVisibility(View.INVISIBLE);
                 break;
         }
     }
@@ -138,6 +143,7 @@ public class RadioUI extends AppCompatActivity {
 
         outState.putString("animeTitle", String.valueOf(animeTitle.getText()));
         outState.putSerializable("songTitle", String.valueOf(songTitle.getText()));
+
 
         super.onSaveInstanceState(outState);
     }
