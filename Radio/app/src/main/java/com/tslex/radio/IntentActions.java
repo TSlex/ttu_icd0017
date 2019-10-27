@@ -8,6 +8,9 @@ public enum IntentActions {
     INTENT_PLAYER_BUFFERING             ("radio.player.buffering"),
     INTENT_PLAYER_STOPPED               ("radio.player.stopped"),
 
+    INTENT_PLAYER_MUTE               ("radio.player.mute"),
+    INTENT_PLAYER_UNMUTE          ("radio.player.unmute"),
+
     INTENT_PLAYER_BUFFERING_PROGRESS    ("radio.player.buffering.progress"),
 
     INTENT_UI_STOP                      ("radio.ui.stop"),

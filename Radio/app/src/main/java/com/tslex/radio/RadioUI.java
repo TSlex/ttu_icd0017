@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class RadioUI extends AppCompatActivity {
@@ -63,11 +66,23 @@ public class RadioUI extends AppCompatActivity {
         intentFilter.addAction(IntentActions.INTENT_PLAYER_BUFFERING_PROGRESS.getAction());
         intentFilter.addAction(IntentActions.INTENT_META_UPDATE.getAction());
         intentFilter.addAction(IntentActions.INTENT_ANIM_PLAY.getAction());
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_DENIED ||
+                    checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_DENIED) {
+
+                String[] permissions = new String[]{Manifest.permission.READ_PHONE_STATE, Manifest.permission.CALL_PHONE};
+
+                requestPermissions(permissions, 999);
+            }
+        }
     }
 
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver);
         super.onDestroy();
     }
 
@@ -189,9 +204,16 @@ public class RadioUI extends AppCompatActivity {
 
     private class ActivityBroadcastReceiver extends BroadcastReceiver {
 
+        private String TAG = ActivityBroadcastReceiver.class.getSimpleName();
+
+        public ActivityBroadcastReceiver() {
+            super();
+            Log.d(TAG, "Created");
+        }
+
         @Override
         public void onReceive(Context context, Intent intent) {
-//            Log.d(TAG, "Reseived: ");
+            Log.d(TAG, "Reseived: " + intent.getAction());
 
             String action = intent.getAction();
 

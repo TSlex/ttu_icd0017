@@ -25,8 +25,8 @@ public class RadioService extends Service implements
     private static String TAG = RadioService.class.getSimpleName();
 
 //    private final String streamPath = "http://pool.anison.fm:9000/AniSonFM(320)";
-    private final String streamPath = URLS.ANISON_STREAM_128.getUrl();
-//    private final String streamPath = "http://sky.babahhcdn.com/rrap";
+//    private final String streamPath = URLS.ANISON_STREAM_128.getUrl();
+    private final String streamPath = "http://sky.babahhcdn.com/rrap";
 //    private final String streamPath = "http://airspectrum.cdnstream1.com:8114/1648_128";
 
     private ScheduledExecutorService metaExecutorService;
@@ -86,13 +86,18 @@ public class RadioService extends Service implements
 //        initPlayer();
 
         intentFilter.addAction(IntentActions.INTENT_UI_STOP.getAction());
+        intentFilter.addAction(IntentActions.INTENT_PLAYER_MUTE.getAction());
+        intentFilter.addAction(IntentActions.INTENT_PLAYER_UNMUTE.getAction());
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
+
 //        metaExecutorService.shutdown();
 //        animationExecutorService.shutdown();
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver);
         super.onDestroy();
     }
 
@@ -190,17 +195,49 @@ public class RadioService extends Service implements
 
     private class ServiceBroadcastReceiver extends BroadcastReceiver {
 
+        private String TAG = ServiceBroadcastReceiver.class.getSimpleName();
+
+        public ServiceBroadcastReceiver() {
+            super();
+            Log.d(TAG, "Created");
+        }
+
+
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "Reseived: ");
+            Log.d(TAG, "Reseived: " + intent.getAction());
 
             String action = intent.getAction();
 
-            if (action != null && action.equals(IntentActions.INTENT_UI_STOP.getAction())){
-                player.stop();
-                metaExecutorService.shutdown();
-                LocalBroadcastManager.getInstance(getApplicationContext())
-                        .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_STOPPED.getAction()));
+            if (action != null) {
+                if (action.equals(IntentActions.INTENT_UI_STOP.getAction())){
+                    Log.d(TAG, "STOP");
+                    player.stop();
+                    metaExecutorService.shutdown();
+                    LocalBroadcastManager.getInstance(getApplicationContext())
+                            .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_STOPPED.getAction()));
+                    onDestroy();
+                }
+                else if (action.equals(IntentActions.INTENT_PLAYER_MUTE.getAction())){
+                    Log.d(TAG, "MUTE");
+                    player.setVolume(0,0);
+                }
+                else if (action.equals(IntentActions.INTENT_PLAYER_UNMUTE.getAction())){
+                    Log.d(TAG, "UNMUTE");
+
+                    new Runnable(){
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            player.setVolume(1,1);
+                        }
+                    }.run();
+//                    player.setVolume(1,1);
+                }
             }
         }
     }
