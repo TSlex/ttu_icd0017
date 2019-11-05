@@ -22,8 +22,8 @@
     <Button
         android:id="@+id/playButton"
         style="@style/PlayButton"
-        android:onClick="buttonClick"
-        android:text="PLAY"
+        android:onClick="playButtonClick"
+        android:text="@string/play_button_play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,38 +38,63 @@
         app:layout_constraintTop_toBottomOf="@+id/playButton">
 
         <TextView
-            android:id="@+id/animeTittle"
-            style="@style/Text.AnimeTitle"
+            android:id="@+id/songTittle"
+            style="@style/Text.SongTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="Anime"
-            app:layout_constraintBottom_toTopOf="@+id/songTittle"
+            android:text="@string/song_name_placeholder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/songTittle"
-            style="@style/Text.SongTitle"
+            android:id="@+id/animeTittle"
+            style="@style/Text.AnimeTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:gravity="center"
-            android:text="Song"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/artist_name_placeholder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/animeTittle" />
+            app:layout_constraintTop_toBottomOf="@+id/songTittle" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
-        android:id="@+id/stationName"
+        android:id="@+id/stationImage"
         style="@style/StationImageView"
-        app:layout_constraintBottom_toTopOf="@+id/playButton"
+        android:contentDescription="@string/station_image"
+        app:layout_constraintBottom_toTopOf="@+id/progressBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"></ImageView>
+
+    <Spinner
+        android:id="@+id/stationSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toTopOf="@+id/progressBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stationImage" />
+
+    <Button
+        android:id="@+id/statisticButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="21dp"
+        android:layout_marginRight="21dp"
+        android:layout_marginBottom="13dp"
+        android:onClick="addTestStation"
+        android:text="@string/button_statistics"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

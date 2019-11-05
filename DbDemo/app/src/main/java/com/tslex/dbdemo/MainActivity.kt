@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         personRepository = PersonRepository(this).open()
 
-        recycledView.layoutManager = LinearLayoutManager(this)
+        recycledView.layoutManager = LinearLayoutManager(this) as RecyclerView.LayoutManager?
         adapter = DataRecyclerViewAdapter(this, personRepository)
         recycledView.adapter = adapter
     }

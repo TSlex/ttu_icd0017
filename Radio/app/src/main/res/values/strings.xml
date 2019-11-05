@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Radio</string>
+    <string name="play_button_play">PLAY</string>
+    <string name="play_button_buffering">BUFFERING</string>
+    <string name="play_button_stop">STOP</string>
+    <string name="artist_name_placeholder">Artist</string>
+    <string name="song_name_placeholder">Song</string>
+    <string name="button_statistics">Statistics</string>
+    <string name="station_image">image for radio station</string>
 </resources>

@@ -38,10 +38,10 @@
         <item name="android:paddingRight">10dp</item>
     </style>
     <style name="Text.AnimeTitle">
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">20sp</item>
     </style>
     <style name="Text.SongTitle">
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">30sp</item>
     </style>
 
 </resources>

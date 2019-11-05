@@ -10,19 +10,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.tslex.radio.domain.RadioStation;
+import com.tslex.radio.repo.RadioRepo;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -30,6 +39,9 @@ import java.util.Arrays;
 public class RadioUI extends AppCompatActivity {
 
     private static String TAG = RadioUI.class.getSimpleName();
+
+    private RadioRepo radioRepository;
+    private ArrayAdapter radioAdapter;
 
     private ActivityBroadcastReceiver localReceiver = new ActivityBroadcastReceiver();
     private IntentFilter intentFilter = new IntentFilter();
@@ -39,6 +51,9 @@ public class RadioUI extends AppCompatActivity {
     private WebReqHandler handler;
 
     private Button playButton;
+    private Button statisticButton;
+    private ImageView stationImage;
+    private Spinner stationSpinner;
     private TextView animeTitle;
     private TextView songTitle;
     private ProgressBar progressBar;
@@ -52,14 +67,28 @@ public class RadioUI extends AppCompatActivity {
 
         pulse = AnimationUtils.loadAnimation(this, R.anim.play_button_anim);
 
+        //UI
         playButton = findViewById(R.id.playButton);
-
+        statisticButton = findViewById(R.id.statisticButton);
+        stationImage = findViewById(R.id.stationImage);
+        stationSpinner = findViewById(R.id.stationSpinner);
         animeTitle = findViewById(R.id.animeTittle);
         songTitle = findViewById(R.id.songTittle);
-
         progressBar = findViewById(R.id.progressBar);
+
         progressBar.setVisibility(View.INVISIBLE);
 
+        //db context
+        radioRepository = new RadioRepo(this).open();
+
+        radioAdapter = new ArrayAdapter(
+                this,
+                R.layout.radio_station_spinner_element,
+                radioRepository.getAll());
+        radioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        stationSpinner.setAdapter(radioAdapter);
+
+        //filters
         intentFilter.addAction(IntentActions.INTENT_PLAYER_PLAYING.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_BUFFERING.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_STOPPED.getAction());
@@ -67,6 +96,8 @@ public class RadioUI extends AppCompatActivity {
         intentFilter.addAction(IntentActions.INTENT_META_UPDATE.getAction());
         intentFilter.addAction(IntentActions.INTENT_ANIM_PLAY.getAction());
 
+
+        //permission for phone calls
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_DENIED ||
                     checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_DENIED) {
@@ -95,8 +126,8 @@ public class RadioUI extends AppCompatActivity {
         updateUI();
     }
 
-    public void buttonClick(View view) {
-        Log.d(TAG, "buttonClick");
+    public void playButtonClick(View view) {
+        Log.d(TAG, "playButtonClick");
 
         switch (status) {
             case PLAYER_STATUS_PLAYING:
@@ -109,6 +140,19 @@ public class RadioUI extends AppCompatActivity {
                 startService(new Intent(this, RadioService.class));
             break;
         }
+    }
+
+    public void addTestStation(View view) {
+
+        RadioStation anison = new RadioStation(
+                "Anison.FM",
+                "http://anison.fm/status.php?widget=false",
+                "http://pool.anison.fm:9000/AniSonFM(128)"
+        );
+
+        anison.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.logo_h));
+
+        radioRepository.add(anison);
     }
 
     private void doMetaRequest(){
@@ -148,7 +192,7 @@ public class RadioUI extends AppCompatActivity {
     private void updateUI() {
         switch (status) {
             case PLAYER_STATUS_PLAYING:
-                playButton.setText("STOP");
+                playButton.setText(R.string.play_button_stop);
                 playButton.startAnimation(pulse);
 
                 progressBar.setVisibility(View.INVISIBLE);
@@ -158,12 +202,12 @@ public class RadioUI extends AppCompatActivity {
                 break;
 
             case PLAYER_STATUS_BUFFERING:
-                playButton.setText("BUFFERING");
+                playButton.setText(R.string.play_button_buffering);
                 progressBar.setVisibility(View.VISIBLE);
                 break;
 
             case PLAYER_STATUS_STOPPED:
-                playButton.setText("PLAY");
+                playButton.setText(R.string.play_button_play);
                 playButton.clearAnimation();
 
                 progressBar.setVisibility(View.INVISIBLE);
