@@ -1,7 +1,10 @@
 package com.tslex.gmaps
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
@@ -9,6 +12,8 @@ import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.common.api.GoogleApi
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -23,9 +28,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     private lateinit var mMap: GoogleMap
     lateinit var locationManager: LocationManager
-    lateinit var locationProvider: String
+    lateinit var locationProvider : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        if (ContextCompat.checkSelfPermission(applicationContext,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 999)
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -42,10 +55,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         var criteria = Criteria()
 
-        locationProvider = locationManager.getBestProvider(criteria, false)
+        locationProvider = locationManager.getBestProvider(criteria, false)!!
 
-        var location = locationManager.getLastKnownLocation(locationProvider)
 
+//        var location = locationManager.getLastKnownLocation(locationProvider)
+
+        locationManager.requestLocationUpdates(locationProvider, 1000, 1F, this)
     }
 
     /**
@@ -66,11 +81,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
 
+    @SuppressLint("MissingPermission")
     override fun onResume() {
         super.onResume()
 
         if (locationManager != null) {
-            locationManager.requestLocationUpdates(locationProvider, 1000, 1f, this)
+            locationManager.requestLocationUpdates(locationProvider, 1000, 1F, this)
         }
     }
 
@@ -83,9 +99,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     override fun onLocationChanged(location: Location?) {
+//        val locationLatLng = LatLng(location!!.latitude, location!!.longitude)
+//        val location = locationManager.getLastKnownLocation(locationProvider)
         val locationLatLng = LatLng(location!!.latitude, location!!.longitude)
+        mMap.addMarker(MarkerOptions().position(locationLatLng))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(locationLatLng))
-        mMap.addMarker(MarkerOptions().position(locationLatLng).title("Help!"))
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
