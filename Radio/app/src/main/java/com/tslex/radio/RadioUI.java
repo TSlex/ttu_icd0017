@@ -30,11 +30,16 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.tslex.radio.adapter.RadioStationAdapter;
 import com.tslex.radio.domain.RadioStation;
+import com.tslex.radio.domain.StationHistory;
+import com.tslex.radio.repo.HistoryRepo;
 import com.tslex.radio.repo.RadioRepo;
 
 import java.lang.reflect.Array;
+import java.sql.Time;
 import java.util.Arrays;
+import java.util.Date;
 
 public class RadioUI extends AppCompatActivity {
 
@@ -81,10 +86,8 @@ public class RadioUI extends AppCompatActivity {
         //db context
         radioRepository = new RadioRepo(this).open();
 
-        radioAdapter = new ArrayAdapter(
-                this,
-                R.layout.radio_station_spinner_element,
-                radioRepository.getAll());
+//        radioAdapter = new ArrayAdapter(this, R.layout.radio_station_spinner_element, radioRepository.getAll());
+        radioAdapter = new RadioStationAdapter(this, R.layout.radio_station_spinner_element, radioRepository.getAll());
         radioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         stationSpinner.setAdapter(radioAdapter);
 
@@ -142,7 +145,15 @@ public class RadioUI extends AppCompatActivity {
         }
     }
 
+    public void openStationHistory(View view){
+        Intent history = new Intent(this, StationHistpryUi.class);
+        startActivity(history);
+    }
+
     public void addTestStation(View view) {
+
+        //add test stations
+        radioRepository.erase();
 
         RadioStation anison = new RadioStation(
                 "Anison.FM",
@@ -152,7 +163,55 @@ public class RadioUI extends AppCompatActivity {
 
         anison.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.logo_h));
 
+        RadioStation sky = new RadioStation(
+                "SKY",
+                "http://anison.fm/status.php?widget=false",
+                "http://pool.anison.fm:9000/AniSonFM(128)"
+        );
+
+        sky.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.logo_h));
+
+
         radioRepository.add(anison);
+        radioRepository.add(sky);
+
+        //add test songs
+        HistoryRepo history = new HistoryRepo(this).open();
+        history.erase();
+
+        history.add(new StationHistory(
+                "Holodnoy Popoy Prijmis Ko Mne",
+                "Sienduk",
+                1,
+                23,
+                new Time(new Date().getTime())
+        ));
+
+        history.add(new StationHistory(
+                "A On Tebja Lyubil, Skotina",
+                "Hzkto",
+                1,
+                4,
+                new Time(new Date().getTime())
+        ));
+
+        history.add(new StationHistory(
+                "Holodnoy Popoy Prijmis Ko Mne",
+                "Sienduk",
+                2,
+                23,
+                new Time(new Date().getTime())
+        ));
+
+        history.add(new StationHistory(
+                "A On Tebja Lyubil, Skotina",
+                "Hzkto",
+                2,
+                4,
+                new Time(new Date().getTime())
+        ));
+
+        history.close();
     }
 
     private void doMetaRequest(){

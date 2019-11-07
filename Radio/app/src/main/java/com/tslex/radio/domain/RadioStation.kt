@@ -49,4 +49,8 @@ class RadioStation {
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
         stationImage = stream.toByteArray().joinToString(", ")
     }
+
+    override fun toString(): String {
+        return stationName;
+    }
 }

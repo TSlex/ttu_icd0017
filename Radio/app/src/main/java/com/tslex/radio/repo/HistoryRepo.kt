@@ -8,6 +8,7 @@ import android.util.Log
 import com.tslex.radio.DbHelper
 import com.tslex.radio.domain.RadioStation
 import com.tslex.radio.domain.StationHistory
+import java.sql.Time
 
 class HistoryRepo(val context: Context) {
 
@@ -29,13 +30,20 @@ class HistoryRepo(val context: Context) {
         dbHelper.close()
     }
 
-    private fun add(history: StationHistory) {
+    fun erase(){
+        db.execSQL(DbHelper.SQL_STATION_HISTORY_DELETE_TABLE)
+        db.execSQL(DbHelper.SQL_STATION_HISTORY_CREATE_TABLE)
+    }
+
+    fun add(history: StationHistory) {
         Log.d(TAG, "added new station")
 
         val contentValue = ContentValues()
         contentValue.put(DbHelper.STATION_HISTORY_STATION_ID, history.stationId)
         contentValue.put(DbHelper.STATION_HISTORY_SONG_NAME, history.songName)
         contentValue.put(DbHelper.STATION_HISTORY_ARTIST_NAME, history.artistName)
+        contentValue.put(DbHelper.STATION_HISTORY_PlAYED_COUNT, history.playedCount)
+        contentValue.put(DbHelper.STATION_HISTORY_LAST_PLAYED, history.lastPlayedTime.toString())
         db.insert(DbHelper.STATION_HISTORY_TABLE_NAME, null, contentValue)
     }
 
@@ -46,7 +54,9 @@ class HistoryRepo(val context: Context) {
                 DbHelper.STATION_HISTORY_ID,
                 DbHelper.STATION_HISTORY_STATION_ID,
                 DbHelper.STATION_HISTORY_SONG_NAME,
-                DbHelper.STATION_HISTORY_ARTIST_NAME
+                DbHelper.STATION_HISTORY_ARTIST_NAME,
+                DbHelper.STATION_HISTORY_PlAYED_COUNT,
+                DbHelper.STATION_HISTORY_LAST_PLAYED
         )
 
         val cursor = db.query(
@@ -84,7 +94,9 @@ class HistoryRepo(val context: Context) {
                                 cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ID)),
                                 cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_SONG_NAME)),
                                 cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ARTIST_NAME)),
-                                cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_STATION_ID))
+                                cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_STATION_ID)),
+                                cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_PlAYED_COUNT)),
+                                Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
                         )
                 )
             } while (cursor.moveToNext())

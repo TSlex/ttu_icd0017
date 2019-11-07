@@ -28,6 +28,11 @@ class RadioRepo(val context: Context) {
         dbHelper.close()
     }
 
+    fun erase(){
+        db.execSQL(DbHelper.SQL_RADIO_STATION_DELETE_TABLE)
+        db.execSQL(DbHelper.SQL_RADIO_STATION_CREATE_TABLE)
+    }
+
     fun add(station: RadioStation) {
         Log.d(TAG, "added new station")
 

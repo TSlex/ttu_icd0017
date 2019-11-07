@@ -23,11 +23,13 @@ class DbHelper(context: Context) :
         const val RADIO_STATION_STREAM = "stream_url"
 
         //StationHistory
-        const val STATION_HISTORY_TABLE_NAME = "RADIO_STATION"
+        const val STATION_HISTORY_TABLE_NAME = "STATION_HISTORY"
         const val STATION_HISTORY_ID = "_id"
         const val STATION_HISTORY_STATION_ID = "station_id"
         const val STATION_HISTORY_SONG_NAME = "song_name"
         const val STATION_HISTORY_ARTIST_NAME = "artist_name"
+        const val STATION_HISTORY_PlAYED_COUNT = "played_count"
+        const val STATION_HISTORY_LAST_PLAYED = "last_played"
 
         const val SQL_RADIO_STATION_CREATE_TABLE =
                 "CREATE TABLE IF NOT EXISTS $RADIO_STATION_TABLE_NAME " +
@@ -45,7 +47,9 @@ class DbHelper(context: Context) :
                         "$STATION_HISTORY_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "$STATION_HISTORY_STATION_ID INTEGER, " +
                         "$STATION_HISTORY_SONG_NAME TEXT NOT NULL, " +
-                        "$STATION_HISTORY_ARTIST_NAME TEXT NOT NULL" +
+                        "$STATION_HISTORY_ARTIST_NAME TEXT NOT NULL, " +
+                        "$STATION_HISTORY_PlAYED_COUNT INTEGER NOT NULL, " +
+                        "$STATION_HISTORY_LAST_PLAYED TIME NOT NULL" +
                         ")"
 
 

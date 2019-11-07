@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/songName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SongName " />
+
+    <TextView
+        android:id="@+id/artistName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ArtistName " />
+
+    <TextView
+        android:id="@+id/playCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PlayCount " />
+
+    <TextView
+        android:id="@+id/lastPlayed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LastPlayed" />
+</LinearLayout>

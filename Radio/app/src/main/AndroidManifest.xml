@@ -18,15 +18,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".StationHistpryUi"></activity>
 
         <receiver
             android:name=".PhoneEventReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE"></action>
+                <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
-
         </receiver>
 
         <service
@@ -34,9 +34,9 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity
-            android:name=".RadioUI">
-<!--            android:screenOrientation="portrait"-->
+        <activity android:name=".RadioUI">
+
+            <!-- android:screenOrientation="portrait" -->
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
