@@ -13,6 +13,7 @@ class RadioStation {
     var stationMeta: String
     var stationStream: String
     var stationHistory : MutableList<StationHistory> = arrayListOf()
+    lateinit var stationBitmap : Bitmap
 
     constructor(id: Int, stationName: String, stationImage: String, stationMeta: String, stationStream: String) {
         this.id = id
@@ -20,6 +21,7 @@ class RadioStation {
         this.stationImage = stationImage
         this.stationMeta = stationMeta
         this.stationStream = stationStream
+        this.stationBitmap = this.getImage()
     }
 
     constructor(stationName: String, stationMeta: String, stationStream: String) {

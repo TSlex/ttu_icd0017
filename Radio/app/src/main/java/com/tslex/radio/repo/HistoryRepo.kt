@@ -30,7 +30,7 @@ class HistoryRepo(val context: Context) {
         dbHelper.close()
     }
 
-    fun erase(){
+    fun erase() {
         db.execSQL(DbHelper.SQL_STATION_HISTORY_DELETE_TABLE)
         db.execSQL(DbHelper.SQL_STATION_HISTORY_CREATE_TABLE)
     }
@@ -70,6 +70,32 @@ class HistoryRepo(val context: Context) {
         )
 
         return cursor
+    }
+
+    fun getByStationId(stationId: Int): ArrayList<StationHistory> {
+        val stationHistories = ArrayList<StationHistory>()
+        val cursor = fetch()
+
+        if (cursor.count > 0) {
+            cursor.moveToFirst()
+
+            do {
+                if (cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_STATION_ID)) == stationId) {
+                    stationHistories.add(
+                            StationHistory(
+                                    cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ID)),
+                                    cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_SONG_NAME)),
+                                    cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ARTIST_NAME)),
+                                    cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_STATION_ID)),
+                                    cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_PlAYED_COUNT)),
+                                    Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
+                            )
+                    )
+                }
+            } while (cursor.moveToNext())
+        }
+
+        return stationHistories
     }
 
     fun getAll(): ArrayList<StationHistory> {

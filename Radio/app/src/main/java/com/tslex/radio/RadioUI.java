@@ -11,19 +11,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -36,17 +34,17 @@ import com.tslex.radio.domain.StationHistory;
 import com.tslex.radio.repo.HistoryRepo;
 import com.tslex.radio.repo.RadioRepo;
 
-import java.lang.reflect.Array;
 import java.sql.Time;
 import java.util.Arrays;
 import java.util.Date;
 
-public class RadioUI extends AppCompatActivity {
+public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private static String TAG = RadioUI.class.getSimpleName();
 
     private RadioRepo radioRepository;
     private ArrayAdapter radioAdapter;
+    private RadioStation currentStation;
 
     private ActivityBroadcastReceiver localReceiver = new ActivityBroadcastReceiver();
     private IntentFilter intentFilter = new IntentFilter();
@@ -86,10 +84,19 @@ public class RadioUI extends AppCompatActivity {
         //db context
         radioRepository = new RadioRepo(this).open();
 
-//        radioAdapter = new ArrayAdapter(this, R.layout.radio_station_spinner_element, radioRepository.getAll());
         radioAdapter = new RadioStationAdapter(this, R.layout.radio_station_spinner_element, radioRepository.getAll());
         radioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         stationSpinner.setAdapter(radioAdapter);
+        stationSpinner.setOnItemSelectedListener(this);
+
+        if (currentStation == null) {
+            currentStation = ((RadioStation) stationSpinner.getSelectedItem());
+        }
+        else{
+            stationSpinner.setSelection(currentStation.getId() - 1);
+        }
+
+        stationImage.setImageBitmap(((RadioStation) stationSpinner.getSelectedItem()).getImage());
 
         //filters
         intentFilter.addAction(IntentActions.INTENT_PLAYER_PLAYING.getAction());
@@ -147,6 +154,7 @@ public class RadioUI extends AppCompatActivity {
 
     public void openStationHistory(View view){
         Intent history = new Intent(this, StationHistpryUi.class);
+        history.putExtra("station_id", currentStation.getId());
         startActivity(history);
     }
 
@@ -161,7 +169,7 @@ public class RadioUI extends AppCompatActivity {
                 "http://pool.anison.fm:9000/AniSonFM(128)"
         );
 
-        anison.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.logo_h));
+        anison.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.anison_fm_logo));
 
         RadioStation sky = new RadioStation(
                 "SKY",
@@ -169,7 +177,7 @@ public class RadioUI extends AppCompatActivity {
                 "http://pool.anison.fm:9000/AniSonFM(128)"
         );
 
-        sky.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.logo_h));
+        sky.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.sky_radio_logo));
 
 
         radioRepository.add(anison);
@@ -196,16 +204,16 @@ public class RadioUI extends AppCompatActivity {
         ));
 
         history.add(new StationHistory(
-                "Holodnoy Popoy Prijmis Ko Mne",
-                "Sienduk",
+                "Wtf? Go To HELL!!",
+                "Akaver",
                 2,
-                23,
+                65,
                 new Time(new Date().getTime())
         ));
 
         history.add(new StationHistory(
-                "A On Tebja Lyubil, Skotina",
-                "Hzkto",
+                "V Bratstve Sila",
+                "Alkeze_xXx_Alkoze",
                 2,
                 4,
                 new Time(new Date().getTime())
@@ -303,6 +311,18 @@ public class RadioUI extends AppCompatActivity {
         songTitle.setText(savedInstanceState.getString("songTitle"));
 
         super.onRestoreInstanceState(savedInstanceState);
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        currentStation = ((RadioStation) parent.getItemAtPosition(position));
+        stationImage.setImageBitmap(currentStation.getStationBitmap());
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        parent.setSelection(0);
     }
 
     private class ActivityBroadcastReceiver extends BroadcastReceiver {

@@ -5,22 +5,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.recyclerview.widget.RecyclerView
 import com.tslex.radio.R
 import com.tslex.radio.domain.StationHistory
 import com.tslex.radio.repo.HistoryRepo
 import kotlinx.android.synthetic.main.station_history_item.view.*
 
-class StationHistoryAdapter (context: Context, private val repo: HistoryRepo) :
+class StationHistoryAdapter(context: Context, private val repo: HistoryRepo, private val currentStation: Int) :
     RecyclerView.Adapter<StationHistoryAdapter.ViewHolder>(){
 
-    private var dataset: ArrayList<StationHistory> = repo.getAll()
+    private var dataset: ArrayList<StationHistory> = repo.getByStationId(currentStation)
     private val inflater: LayoutInflater = LayoutInflater.from(context)
-
-    fun refreshData(){
-        dataset = repo.getAll()
-    }
+//
+//    fun refreshData(){
+////        dataset = repo.getAll()
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val rowView = inflater.inflate(R.layout.station_history_item, parent, false)

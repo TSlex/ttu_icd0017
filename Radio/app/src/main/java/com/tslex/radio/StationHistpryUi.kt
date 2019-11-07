@@ -16,16 +16,19 @@ class StationHistpryUi : AppCompatActivity() {
 
     private lateinit var historyRepository: HistoryRepo
     private lateinit var adapter: RecyclerView.Adapter<*>
+    private var currentStation: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.station_histpry_ui)
 
         Log.d(TAG, "onCreate")
+        currentStation = intent.getIntExtra("station_id", -1)
+        Log.d(TAG, currentStation.toString())
 
         historyRepository = HistoryRepo(this).open()
         historyView.layoutManager = LinearLayoutManager(this)
-        adapter = StationHistoryAdapter(this, historyRepository)
+        adapter = StationHistoryAdapter(this, historyRepository, currentStation)
         historyView.adapter = adapter
 
     }
