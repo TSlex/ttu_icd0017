@@ -11,22 +11,26 @@ class RadioStation {
     var stationName: String
     var stationImage: String = ""
     var stationMeta: String
+    var stationMetaRegex: String
     var stationStream: String
     var stationHistory : MutableList<StationHistory> = arrayListOf()
+
     lateinit var stationBitmap : Bitmap
 
-    constructor(id: Int, stationName: String, stationImage: String, stationMeta: String, stationStream: String) {
+    constructor(id: Int, stationName: String, stationImage: String, stationMeta: String, stationStream: String, stationMetaRegex: String) {
         this.id = id
         this.stationName = stationName
         this.stationImage = stationImage
         this.stationMeta = stationMeta
+        this.stationMetaRegex = stationMeta
         this.stationStream = stationStream
         this.stationBitmap = this.getImage()
     }
 
-    constructor(stationName: String, stationMeta: String, stationStream: String) {
+    constructor(stationName: String, stationMeta: String, stationStream: String, stationMetaRegex: String) {
         this.stationName = stationName
         this.stationMeta = stationMeta
+        this.stationMetaRegex = stationMeta
         this.stationStream = stationStream
     }
 

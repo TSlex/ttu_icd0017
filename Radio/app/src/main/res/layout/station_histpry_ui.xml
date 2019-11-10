@@ -7,9 +7,8 @@
     tools:context=".StationHistpryUi">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/historyImage"
+        style="@style/StationImageView"
         app:layout_constraintBottom_toTopOf="@+id/historyView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

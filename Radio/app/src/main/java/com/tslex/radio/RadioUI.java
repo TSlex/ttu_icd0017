@@ -34,9 +34,13 @@ import com.tslex.radio.domain.StationHistory;
 import com.tslex.radio.repo.HistoryRepo;
 import com.tslex.radio.repo.RadioRepo;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -57,7 +61,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
     private Button statisticButton;
     private ImageView stationImage;
     private Spinner stationSpinner;
-    private TextView animeTitle;
+    private TextView artistTitle;
     private TextView songTitle;
     private ProgressBar progressBar;
 
@@ -75,7 +79,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         statisticButton = findViewById(R.id.statisticButton);
         stationImage = findViewById(R.id.stationImage);
         stationSpinner = findViewById(R.id.stationSpinner);
-        animeTitle = findViewById(R.id.animeTittle);
+        artistTitle = findViewById(R.id.animeTittle);
         songTitle = findViewById(R.id.songTittle);
         progressBar = findViewById(R.id.progressBar);
 
@@ -96,7 +100,9 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
             stationSpinner.setSelection(currentStation.getId() - 1);
         }
 
-        stationImage.setImageBitmap(((RadioStation) stationSpinner.getSelectedItem()).getImage());
+        if (stationSpinner.getSelectedItem() != null) {
+            stationImage.setImageBitmap(((RadioStation) stationSpinner.getSelectedItem()).getImage());
+        }
 
         //filters
         intentFilter.addAction(IntentActions.INTENT_PLAYER_PLAYING.getAction());
@@ -166,7 +172,8 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         RadioStation anison = new RadioStation(
                 "Anison.FM",
                 "http://anison.fm/status.php?widget=false",
-                "http://pool.anison.fm:9000/AniSonFM(128)"
+                "http://pool.anison.fm:9000/AniSonFM(128)",
+                "<[^<>]*>"
         );
 
         anison.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.anison_fm_logo));
@@ -174,7 +181,8 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         RadioStation sky = new RadioStation(
                 "SKY",
                 "http://anison.fm/status.php?widget=false",
-                "http://pool.anison.fm:9000/AniSonFM(128)"
+                "http://pool.anison.fm:9000/AniSonFM(128)",
+                "<[^<>]*>"
         );
 
         sky.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.sky_radio_logo));
@@ -233,16 +241,28 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                     @Override
                     public void onResponse(String response) {
 
-                        String[] raw = response.split("<[^<>]*>");
-                        String animeTitleText = raw[raw.length - 3].trim();
-                        String songTitleText = raw[raw.length - 2].split(";")[1].trim();
+                        response = UnicEncoder.encode(response);
+
+                        String[] raw = response.split("\\{.+:\\s+|<[^<>]*>( — )?( &#151; )?(\"\\})?");
+//                        String[] raw = response.split("\\{|<[^<>]*>( — )?(\"\\})?");
+                        List<String> formated = new ArrayList<>();
+
+                        for (String element : raw) {
+                            if (!element.equals("")) {
+                                formated.add(element);
+                            }
+                        }
+
+                        String artist = formated.get(0);
+                        String song = formated.get(1);
 
                         Log.d(TAG, Arrays.toString(raw));
-                        Log.d(TAG, "Anime Title:" + animeTitleText);
-                        Log.d(TAG, "Song Title:" + songTitleText);
 
-                        animeTitle.setText(animeTitleText);
-                        songTitle.setText(songTitleText);
+                        System.out.println("Artist:" + artist);
+                        System.out.println("Song:" + song);
+//
+                        artistTitle.setText(artist.replaceAll("\\s+", " "));
+                        songTitle.setText(song.replaceAll("\\s+", " "));
                     }
                 },
                 new Response.ErrorListener(){
@@ -264,7 +284,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
                 progressBar.setVisibility(View.INVISIBLE);
 
-                animeTitle.setVisibility(View.VISIBLE);
+                artistTitle.setVisibility(View.VISIBLE);
                 songTitle.setVisibility(View.VISIBLE);
                 break;
 
@@ -279,8 +299,8 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
                 progressBar.setVisibility(View.INVISIBLE);
 
-                animeTitle.setVisibility(View.INVISIBLE);
-                songTitle.setVisibility(View.INVISIBLE);
+//                artistTitle.setVisibility(View.INVISIBLE);
+//                songTitle.setVisibility(View.INVISIBLE);
                 break;
         }
     }
@@ -293,8 +313,9 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
         outState.putSerializable("status", status);
 
-        outState.putString("animeTitle", String.valueOf(animeTitle.getText()));
-        outState.putSerializable("songTitle", String.valueOf(songTitle.getText()));
+        outState.putString("artistTitle", String.valueOf(artistTitle.getText()));
+        outState.putString("songTitle", String.valueOf(songTitle.getText()));
+        outState.putInt("current_station_index", stationSpinner.getSelectedItemPosition());
 
 
         super.onSaveInstanceState(outState);
@@ -307,8 +328,9 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
         status = (PlayerStatus) savedInstanceState.getSerializable("status");
 
-        animeTitle.setText(savedInstanceState.getString("animeTitle"));
+        artistTitle.setText(savedInstanceState.getString("artistTitle"));
         songTitle.setText(savedInstanceState.getString("songTitle"));
+        stationSpinner.setSelection(savedInstanceState.getInt("current_station_index"));
 
         super.onRestoreInstanceState(savedInstanceState);
     }

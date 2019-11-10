@@ -16,10 +16,6 @@ class StationHistoryAdapter(context: Context, private val repo: HistoryRepo, pri
 
     private var dataset: ArrayList<StationHistory> = repo.getByStationId(currentStation)
     private val inflater: LayoutInflater = LayoutInflater.from(context)
-//
-//    fun refreshData(){
-////        dataset = repo.getAll()
-//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val rowView = inflater.inflate(R.layout.station_history_item, parent, false)

@@ -21,6 +21,7 @@ class DbHelper(context: Context) :
         const val RADIO_STATION_IMAGE = "image_byte_array"
         const val RADIO_STATION_META = "meta_url"
         const val RADIO_STATION_STREAM = "stream_url"
+        const val RADIO_STATION_META_REG = "meta_reg"
 
         //StationHistory
         const val STATION_HISTORY_TABLE_NAME = "STATION_HISTORY"
@@ -38,7 +39,8 @@ class DbHelper(context: Context) :
                         "$RADIO_STATION_NAME TEXT NOT NULL, " +
                         "$RADIO_STATION_IMAGE TEXT NOT NULL, " +
                         "$RADIO_STATION_META TEXT NOT NULL, " +
-                        "$RADIO_STATION_STREAM TEXT NOT NULL" +
+                        "$RADIO_STATION_STREAM TEXT NOT NULL, " +
+                        "$RADIO_STATION_META_REG TEXT NOT NULL" +
                         ")"
 
         const val SQL_STATION_HISTORY_CREATE_TABLE =

@@ -113,6 +113,8 @@ public class RadioService extends Service implements
         LocalBroadcastManager.getInstance(getApplicationContext())
                 .registerReceiver(localReceiver, intentFilter);
 
+        startMetaUpdate(); //TODO: for testing only!!!
+
 
         player.prepareAsync();
 
@@ -126,7 +128,6 @@ public class RadioService extends Service implements
                 new Runnable() {
                     @Override
                     public void run() {
-//                        Log.d(TAG, "Meta is Updating");
                         LocalBroadcastManager.getInstance(getApplicationContext())
                                 .sendBroadcast(new Intent(IntentActions.INTENT_ANIM_PLAY.getAction()));
                     }
@@ -181,7 +182,7 @@ public class RadioService extends Service implements
 
         player.start();
 
-        startMetaUpdate();
+//        startMetaUpdate();
         startAnimationPlayer();
 
         LocalBroadcastManager.getInstance(getApplicationContext())

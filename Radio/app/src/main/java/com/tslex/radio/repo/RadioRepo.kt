@@ -28,7 +28,7 @@ class RadioRepo(val context: Context) {
         dbHelper.close()
     }
 
-    fun erase(){
+    fun erase() {
         db.execSQL(DbHelper.SQL_RADIO_STATION_DELETE_TABLE)
         db.execSQL(DbHelper.SQL_RADIO_STATION_CREATE_TABLE)
     }
@@ -41,6 +41,7 @@ class RadioRepo(val context: Context) {
         contentValue.put(DbHelper.RADIO_STATION_IMAGE, station.stationImage)
         contentValue.put(DbHelper.RADIO_STATION_META, station.stationMeta)
         contentValue.put(DbHelper.RADIO_STATION_STREAM, station.stationStream)
+        contentValue.put(DbHelper.RADIO_STATION_META_REG, station.stationMetaRegex)
         db.insert(DbHelper.RADIO_STATION_TABLE_NAME, null, contentValue)
     }
 
@@ -52,7 +53,8 @@ class RadioRepo(val context: Context) {
                 DbHelper.RADIO_STATION_NAME,
                 DbHelper.RADIO_STATION_IMAGE,
                 DbHelper.RADIO_STATION_META,
-                DbHelper.RADIO_STATION_STREAM
+                DbHelper.RADIO_STATION_STREAM,
+                DbHelper.RADIO_STATION_META_REG
         )
 
         val cursor = db.query(
@@ -91,7 +93,8 @@ class RadioRepo(val context: Context) {
                                 cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_NAME)),
                                 cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_IMAGE)),
                                 cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_META)),
-                                cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_STREAM))
+                                cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_STREAM)),
+                                cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_META_REG))
                         )
                 )
             } while (cursor.moveToNext())
@@ -100,5 +103,25 @@ class RadioRepo(val context: Context) {
 
 
         return radioStations
+    }
+
+    fun getById(id: Int): RadioStation? {
+
+        val cursor = db.rawQuery("select * from ${DbHelper.RADIO_STATION_TABLE_NAME} where ${DbHelper.RADIO_STATION_ID} = $id", null)
+
+        cursor.use { cursor ->
+            if (cursor.count == 1){
+                cursor.moveToFirst()
+                return RadioStation(
+                        cursor.getInt(cursor.getColumnIndex(DbHelper.RADIO_STATION_ID)),
+                        cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_NAME)),
+                        cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_IMAGE)),
+                        cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_META)),
+                        cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_STREAM)),
+                        cursor.getString(cursor.getColumnIndex(DbHelper.RADIO_STATION_META_REG))
+                )
+            }
+            return null
+        }
     }
 }
