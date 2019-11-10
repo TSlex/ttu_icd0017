@@ -50,6 +50,9 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
     private ArrayAdapter radioAdapter;
     private RadioStation currentStation;
 
+    private String currentSongTittle;
+    private String currentArtistTitle;
+
     private ActivityBroadcastReceiver localReceiver = new ActivityBroadcastReceiver();
     private IntentFilter intentFilter = new IntentFilter();
 
@@ -95,8 +98,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
         if (currentStation == null) {
             currentStation = ((RadioStation) stationSpinner.getSelectedItem());
-        }
-        else{
+        } else {
             stationSpinner.setSelection(currentStation.getId() - 1);
         }
 
@@ -134,9 +136,21 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
     }
 
     @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver);
+        super.onPause();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
+
+        LocalBroadcastManager
+                .getInstance(getApplicationContext())
+                .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_UPDATE.getAction()));
 
         LocalBroadcastManager.getInstance(this).registerReceiver(localReceiver, intentFilter);
         updateUI();
@@ -153,12 +167,14 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                 break;
             case PLAYER_STATUS_STOPPED:
                 //start stream
-                startService(new Intent(this, RadioService.class));
-            break;
+                Intent service = new Intent(this, RadioService.class);
+                service.putExtra("station_id", currentStation.getId());
+                startService(service);
+                break;
         }
     }
 
-    public void openStationHistory(View view){
+    public void openStationHistory(View view) {
         Intent history = new Intent(this, StationHistpryUi.class);
         history.putExtra("station_id", currentStation.getId());
         startActivity(history);
@@ -173,16 +189,16 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                 "Anison.FM",
                 "http://anison.fm/status.php?widget=false",
                 "http://pool.anison.fm:9000/AniSonFM(128)",
-                "<[^<>]*>"
+                "\\{.+:\\s+|<[^<>]*>( — )?( &#151; )?(\"\\})?"
         );
 
         anison.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.anison_fm_logo));
 
         RadioStation sky = new RadioStation(
                 "SKY",
-                "http://anison.fm/status.php?widget=false",
-                "http://pool.anison.fm:9000/AniSonFM(128)",
-                "<[^<>]*>"
+                "http://dad.akaver.com/api/SongTitles/SKY",
+                "http://sky.babahhcdn.com/SKY",
+                ".+\"Count\":0,\"Artist\":\"|\",\"Title\":\"|\",\"IsSkippable\".+"
         );
 
         sky.convertBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.sky_radio_logo));
@@ -192,59 +208,60 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         radioRepository.add(sky);
 
         //add test songs
-        HistoryRepo history = new HistoryRepo(this).open();
-        history.erase();
-
-        history.add(new StationHistory(
-                "Holodnoy Popoy Prijmis Ko Mne",
-                "Sienduk",
-                1,
-                23,
-                new Time(new Date().getTime())
-        ));
-
-        history.add(new StationHistory(
-                "A On Tebja Lyubil, Skotina",
-                "Hzkto",
-                1,
-                4,
-                new Time(new Date().getTime())
-        ));
-
-        history.add(new StationHistory(
-                "Wtf? Go To HELL!!",
-                "Akaver",
-                2,
-                65,
-                new Time(new Date().getTime())
-        ));
-
-        history.add(new StationHistory(
-                "V Bratstve Sila",
-                "Alkeze_xXx_Alkoze",
-                2,
-                4,
-                new Time(new Date().getTime())
-        ));
-
-        history.close();
+//        HistoryRepo history = new HistoryRepo(this).open();
+//        history.erase();
+//
+//        history.add(new StationHistory(
+//                "Holodnoy Popoy Prijmis Ko Mne",
+//                "Sienduk",
+//                1,
+//                23,
+//                new Time(new Date().getTime())
+//        ));
+//
+//        history.add(new StationHistory(
+//                "A On Tebja Lyubil, Skotina",
+//                "Hzkto",
+//                1,
+//                4,
+//                new Time(new Date().getTime())
+//        ));
+//
+//        history.add(new StationHistory(
+//                "Wtf? Go To HELL!!",
+//                "Akaver",
+//                2,
+//                65,
+//                new Time(new Date().getTime())
+//        ));
+//
+//        history.add(new StationHistory(
+//                "V Bratstve Sila",
+//                "Alkeze_xXx_Alkoze",
+//                2,
+//                4,
+//                new Time(new Date().getTime())
+//        ));
+//
+//        history.close();
     }
 
-    private void doMetaRequest(){
+    private void doMetaRequest() {
         handler = WebReqHandler.getInstance(this);
         handler.getRequestQueue();
 
         StringRequest request = new StringRequest(
                 Request.Method.GET,
-                URLS.ANISON_META.getUrl(),
+                currentStation.getStationMeta(),
+//                URLS.ANISON_META.getUrl(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
                         response = UnicEncoder.encode(response);
 
-                        String[] raw = response.split("\\{.+:\\s+|<[^<>]*>( — )?( &#151; )?(\"\\})?");
-//                        String[] raw = response.split("\\{|<[^<>]*>( — )?(\"\\})?");
+//                        String[] raw = response.split("\\{.+:\\s+|<[^<>]*>( — )?( &#151; )?(\"\\})?");
+                        String[] raw = response.split(currentStation.getStationMetaRegex());
                         List<String> formated = new ArrayList<>();
 
                         for (String element : raw) {
@@ -257,15 +274,25 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                         String song = formated.get(1);
 
                         Log.d(TAG, Arrays.toString(raw));
-
                         System.out.println("Artist:" + artist);
                         System.out.println("Song:" + song);
+
+                        if (currentArtistTitle == null | currentSongTittle == null) {
+                            currentArtistTitle = artist;
+                            currentSongTittle = song;
+                            updateHistory();
+                        }
+                        else if (!currentArtistTitle.equals(artist) | !currentSongTittle.equals(song)){
+                            currentArtistTitle = artist;
+                            currentSongTittle = song;
+                            updateHistory();
+                        }
 //
                         artistTitle.setText(artist.replaceAll("\\s+", " "));
                         songTitle.setText(song.replaceAll("\\s+", " "));
                     }
                 },
-                new Response.ErrorListener(){
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
@@ -274,6 +301,30 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         );
 
         handler.addToRequestQueue(request);
+    }
+
+    private void updateHistory() {
+
+        HistoryRepo historyRepository = new HistoryRepo(this).open();
+
+        StationHistory history = historyRepository.getOne(currentStation.getId(), currentSongTittle, currentArtistTitle);
+
+        if (history == null){
+            historyRepository.add(new StationHistory(
+                    currentSongTittle,
+                    currentArtistTitle,
+                    currentStation.getId(),
+                    1,
+                    new Time(new Date().getTime())
+            ));
+        }
+        else{
+            history.setPlayedCount(history.getPlayedCount() + 1);
+            history.setLastPlayedTime(new Time(new Date().getTime()));
+            historyRepository.updateRecord(history);
+        }
+
+        historyRepository.close();
     }
 
     private void updateUI() {
@@ -299,8 +350,13 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
                 progressBar.setVisibility(View.INVISIBLE);
 
-//                artistTitle.setVisibility(View.INVISIBLE);
-//                songTitle.setVisibility(View.INVISIBLE);
+                artistTitle.setText("");
+                songTitle.setText("");
+                currentArtistTitle = "";
+                currentSongTittle = "";
+
+                artistTitle.setVisibility(View.INVISIBLE);
+                songTitle.setVisibility(View.INVISIBLE);
                 break;
         }
     }
@@ -338,6 +394,9 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        LocalBroadcastManager
+                .getInstance(getApplicationContext())
+                .sendBroadcast(new Intent(IntentActions.INTENT_UI_STOP.getAction()));
         currentStation = ((RadioStation) parent.getItemAtPosition(position));
         stationImage.setImageBitmap(currentStation.getStationBitmap());
     }

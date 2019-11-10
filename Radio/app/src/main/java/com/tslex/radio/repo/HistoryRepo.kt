@@ -72,6 +72,42 @@ class HistoryRepo(val context: Context) {
         return cursor
     }
 
+    fun getOne(stationId: Int, songName: String, artistName: String): StationHistory?{
+
+        val cursor = db.rawQuery("select * from ${DbHelper.STATION_HISTORY_TABLE_NAME} " +
+                "where ${DbHelper.STATION_HISTORY_STATION_ID} == $stationId " +
+                "and ${DbHelper.STATION_HISTORY_SONG_NAME} == '$songName' " +
+                "and ${DbHelper.STATION_HISTORY_ARTIST_NAME} == '$artistName'",
+                null)
+
+        cursor.use { cursor ->
+            if (cursor.count == 1){
+                cursor.moveToFirst()
+                return StationHistory(
+                        cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_SONG_NAME)),
+                        cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ARTIST_NAME)),
+                        cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_STATION_ID)),
+                        cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_PlAYED_COUNT)),
+                        Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
+                )
+            }
+            return null
+        }
+    }
+
+    fun updateRecord(history: StationHistory){
+
+        val contentValue = ContentValues()
+        contentValue.put(DbHelper.STATION_HISTORY_STATION_ID, history.stationId)
+        contentValue.put(DbHelper.STATION_HISTORY_SONG_NAME, history.songName)
+        contentValue.put(DbHelper.STATION_HISTORY_ARTIST_NAME, history.artistName)
+        contentValue.put(DbHelper.STATION_HISTORY_PlAYED_COUNT, history.playedCount)
+        contentValue.put(DbHelper.STATION_HISTORY_LAST_PLAYED, history.lastPlayedTime.toString())
+
+        db.update(DbHelper.STATION_HISTORY_TABLE_NAME, contentValue, "${DbHelper.STATION_HISTORY_PlAYED_COUNT} = ${history.stationId}", null)
+    }
+
     fun getByStationId(stationId: Int): ArrayList<StationHistory> {
         val stationHistories = ArrayList<StationHistory>()
         val cursor = fetch()

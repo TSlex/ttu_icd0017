@@ -12,6 +12,9 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.tslex.radio.domain.RadioStation;
+import com.tslex.radio.repo.RadioRepo;
+
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,7 +27,11 @@ public class RadioService extends Service implements
 
     private static String TAG = RadioService.class.getSimpleName();
 
-//    private final String streamPath = "http://pool.anison.fm:9000/AniSonFM(320)";
+    private RadioStation currentStation;
+
+    private boolean isInterupted;
+
+    //    private final String streamPath = "http://pool.anison.fm:9000/AniSonFM(320)";
     private final String streamPath = URLS.ANISON_STREAM_128.getUrl();
 //    private final String streamPath = "http://sky.babahhcdn.com/rrap";
 //    private final String streamPath = "http://airspectrum.cdnstream1.com:8114/1648_128";
@@ -39,10 +46,11 @@ public class RadioService extends Service implements
 //    private MediaPlayer player = new MediaPlayer();
 //    private MediaPlayer player = MediaPlayer.create(this, R.raw.test_song);
 
-    private void initPlayer(){
+    private void initPlayer() {
 
 //        player.reset();
         player = new MediaPlayer();
+
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
 
@@ -53,7 +61,8 @@ public class RadioService extends Service implements
 
 
         try {
-            player.setDataSource(streamPath);
+            player.setDataSource(currentStation.getStationStream());
+//            player.setDataSource(streamPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,6 +95,7 @@ public class RadioService extends Service implements
 //        initPlayer();
 
         intentFilter.addAction(IntentActions.INTENT_UI_STOP.getAction());
+        intentFilter.addAction(IntentActions.INTENT_PLAYER_UPDATE.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_MUTE.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_UNMUTE.getAction());
     }
@@ -105,15 +115,30 @@ public class RadioService extends Service implements
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
 
+        isInterupted = false;
+
         LocalBroadcastManager.getInstance(getApplicationContext())
                 .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_BUFFERING.getAction()));
+
+        int currentStationId = intent.getIntExtra("station_id", -1);
+        RadioRepo radioRepository = new RadioRepo(this).open();
+
+        currentStation = radioRepository.getById(currentStationId);
+
+        Log.d(TAG, String.valueOf(currentStation.getId()));
+        Log.d(TAG, currentStation.getStationName());
+        Log.d(TAG, currentStation.getStationMeta());
+        Log.d(TAG, currentStation.getStationStream());
+
+        radioRepository.close();
+
 
         initPlayer();
 
         LocalBroadcastManager.getInstance(getApplicationContext())
                 .registerReceiver(localReceiver, intentFilter);
 
-        startMetaUpdate(); //TODO: for testing only!!!
+//        startMetaUpdate(); //TODO: for testing only!!!
 
 
         player.prepareAsync();
@@ -121,7 +146,7 @@ public class RadioService extends Service implements
         return START_STICKY;
     }
 
-    private void startAnimationPlayer(){
+    private void startAnimationPlayer() {
         animationExecutorService = Executors.newScheduledThreadPool(1);
 
         metaExecutorService.scheduleAtFixedRate(
@@ -138,7 +163,7 @@ public class RadioService extends Service implements
         );
     }
 
-    private void startMetaUpdate(){
+    private void startMetaUpdate() {
         metaExecutorService = Executors.newScheduledThreadPool(1);
 
         metaExecutorService.scheduleAtFixedRate(
@@ -172,17 +197,19 @@ public class RadioService extends Service implements
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
         Log.d(TAG, "onError");
-
+        super.onDestroy();
         return false;
     }
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
+        if (isInterupted) return;
+
         Log.d(TAG, "onPrepared");
 
         player.start();
 
-//        startMetaUpdate();
+        startMetaUpdate();
         startAnimationPlayer();
 
         LocalBroadcastManager.getInstance(getApplicationContext())
@@ -211,22 +238,41 @@ public class RadioService extends Service implements
             String action = intent.getAction();
 
             if (action != null) {
-                if (action.equals(IntentActions.INTENT_UI_STOP.getAction())){
+                if (action.equals(IntentActions.INTENT_UI_STOP.getAction())) {
+
+                    isInterupted = true;
+
                     Log.d(TAG, "STOP");
-                    player.stop();
-                    metaExecutorService.shutdown();
+
+                    if (player != null) {
+                        player.stop();
+                        player = null;
+                    }
+                    if (metaExecutorService != null) {
+                        metaExecutorService.shutdown();
+                    }
+                    if (animationExecutorService != null) {
+                        animationExecutorService.shutdown();
+                    }
+
                     LocalBroadcastManager.getInstance(getApplicationContext())
                             .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_STOPPED.getAction()));
+
                     onDestroy();
-                }
-                else if (action.equals(IntentActions.INTENT_PLAYER_MUTE.getAction())){
+                } else if (action.equals(IntentActions.INTENT_PLAYER_UPDATE.getAction())) {
+                    Log.d(TAG, "UPDATE REQUEST");
+                    if (player.isPlaying()){
+                        LocalBroadcastManager.getInstance(getApplicationContext())
+                                .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_PLAYING.getAction()));
+                    }
+
+                } else if (action.equals(IntentActions.INTENT_PLAYER_MUTE.getAction())) {
                     Log.d(TAG, "MUTE");
-                    player.setVolume(0,0);
-                }
-                else if (action.equals(IntentActions.INTENT_PLAYER_UNMUTE.getAction())){
+                    player.setVolume(0, 0);
+                } else if (action.equals(IntentActions.INTENT_PLAYER_UNMUTE.getAction())) {
                     Log.d(TAG, "UNMUTE");
 
-                    new Runnable(){
+                    new Runnable() {
                         @Override
                         public void run() {
                             try {
@@ -234,7 +280,7 @@ public class RadioService extends Service implements
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            player.setVolume(1,1);
+                            player.setVolume(1, 1);
                         }
                     }.run();
 //                    player.setVolume(1,1);

@@ -22,7 +22,7 @@ class RadioStation {
         this.stationName = stationName
         this.stationImage = stationImage
         this.stationMeta = stationMeta
-        this.stationMetaRegex = stationMeta
+        this.stationMetaRegex = stationMetaRegex
         this.stationStream = stationStream
         this.stationBitmap = this.getImage()
     }
@@ -30,7 +30,7 @@ class RadioStation {
     constructor(stationName: String, stationMeta: String, stationStream: String, stationMetaRegex: String) {
         this.stationName = stationName
         this.stationMeta = stationMeta
-        this.stationMetaRegex = stationMeta
+        this.stationMetaRegex = stationMetaRegex
         this.stationStream = stationStream
     }
 
