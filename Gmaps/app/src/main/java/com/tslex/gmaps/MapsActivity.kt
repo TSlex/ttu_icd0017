@@ -28,15 +28,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     private lateinit var mMap: GoogleMap
     lateinit var locationManager: LocationManager
-    lateinit var locationProvider : String
+    lateinit var locationProvider: String
+
+    private val MIN_TIME: Long = 1
+    private val MIN_DIST: Float = 1f
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        if (ContextCompat.checkSelfPermission(applicationContext,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 999)
+        if (ContextCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 999
+            )
         }
 
         super.onCreate(savedInstanceState)
@@ -48,19 +56,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         //location
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        var enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        if (!enabled) {
-            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-        }
+//        var enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+//        if (!enabled) {
+//            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+//        }
 
-        var criteria = Criteria()
+//        var criteria = Criteria()
 
-        locationProvider = locationManager.getBestProvider(criteria, false)!!
+//        locationProvider = locationManager.getBestProvider(criteria, false)!!
 
 
 //        var location = locationManager.getLastKnownLocation(locationProvider)
 
-        locationManager.requestLocationUpdates(locationProvider, 1000, 1F, this)
+//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0.5F, this)
     }
 
     /**
@@ -73,36 +81,42 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
      * installed Google Play services and returned to the app.
      */
     override fun onMapReady(googleMap: GoogleMap) {
-//        mMap = googleMap
-//
+        mMap = googleMap
+
 //        // Add a marker in Sydney and move the camera
-//        val sydney = LatLng(-34.0, 151.0)
-//        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-    }
+        val sydney = LatLng(-34.0, 151.0)
+        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
 
-    @SuppressLint("MissingPermission")
-    override fun onResume() {
-        super.onResume()
-
-        if (locationManager != null) {
-            locationManager.requestLocationUpdates(locationProvider, 1000, 1F, this)
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DIST, this)
+        }catch (ex : SecurityException){
+            ex.printStackTrace()
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-
-        if (locationManager != null) {
-            locationManager.removeUpdates(this)
-        }
-    }
+//    @SuppressLint("MissingPermission")
+//    override fun onResume() {
+//        super.onResume()
+//
+//        if (locationManager != null) {
+//            locationManager.requestLocationUpdates(locationProvider, 1000, 0.5f, this)
+//        }
+//    }
+//
+//    override fun onPause() {
+//        super.onPause()
+//
+//        if (locationManager != null) {
+//            locationManager.removeUpdates(this)
+//        }
+//    }
 
     override fun onLocationChanged(location: Location?) {
 //        val locationLatLng = LatLng(location!!.latitude, location!!.longitude)
 //        val location = locationManager.getLastKnownLocation(locationProvider)
         val locationLatLng = LatLng(location!!.latitude, location!!.longitude)
-        mMap.addMarker(MarkerOptions().position(locationLatLng))
+        mMap.addMarker(MarkerOptions().position(locationLatLng).title("please work!"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(locationLatLng))
     }
 
