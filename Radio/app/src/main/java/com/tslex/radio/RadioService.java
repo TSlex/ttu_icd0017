@@ -116,14 +116,21 @@ public class RadioService extends Service implements
         Log.d(TAG, "onStartCommand");
 
         isInterupted = false;
+        int currentStationId = -1;
 
         LocalBroadcastManager.getInstance(getApplicationContext())
                 .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_BUFFERING.getAction()));
 
-        int currentStationId = intent.getIntExtra("station_id", -1);
+        try{
+            currentStationId = intent.getIntExtra("station_id", -1);
+        } catch (Exception ex){
+            Log.e(TAG, "onStartCommand: can not get extra, may be application is dead");
+        }
         RadioRepo radioRepository = new RadioRepo(this).open();
 
         currentStation = radioRepository.getById(currentStationId);
+
+        if (currentStation == null) return START_STICKY;
 
         Log.d(TAG, String.valueOf(currentStation.getId()));
         Log.d(TAG, currentStation.getStationName());

@@ -36,7 +36,7 @@ class HistoryRepo(val context: Context) {
     }
 
     fun add(history: StationHistory) {
-        Log.d(TAG, "added new station")
+        Log.d(TAG, "added new song")
 
         val contentValue = ContentValues()
         contentValue.put(DbHelper.STATION_HISTORY_STATION_ID, history.stationId)
@@ -65,8 +65,7 @@ class HistoryRepo(val context: Context) {
                 null,
                 null,
                 null,
-                null,
-                null
+                null, "${DbHelper.STATION_HISTORY_LAST_PLAYED} DESC"
         )
 
         return cursor
@@ -105,7 +104,10 @@ class HistoryRepo(val context: Context) {
         contentValue.put(DbHelper.STATION_HISTORY_PlAYED_COUNT, history.playedCount)
         contentValue.put(DbHelper.STATION_HISTORY_LAST_PLAYED, history.lastPlayedTime.toString())
 
-        db.update(DbHelper.STATION_HISTORY_TABLE_NAME, contentValue, "${DbHelper.STATION_HISTORY_PlAYED_COUNT} = ${history.stationId}", null)
+        db.update(DbHelper.STATION_HISTORY_TABLE_NAME, contentValue, "" +
+                "${DbHelper.STATION_HISTORY_PlAYED_COUNT} = ${history.stationId} AND " +
+                "${DbHelper.STATION_HISTORY_ID} = ${history.id}", null)
+        db.close()
     }
 
     fun getByStationId(stationId: Int): ArrayList<StationHistory> {
@@ -164,5 +166,27 @@ class HistoryRepo(val context: Context) {
             } while (cursor.moveToNext())
         }
         return stationHistories
+    }
+
+    fun getLast(stationId: Int): StationHistory?{
+        val cursor = db.rawQuery("select * from ${DbHelper.STATION_HISTORY_TABLE_NAME} " +
+                "where ${DbHelper.STATION_HISTORY_STATION_ID} == $stationId " +
+                "order by ${DbHelper.STATION_HISTORY_LAST_PLAYED} DESC",
+                null)
+
+        cursor.use { cursor ->
+            if (cursor.count > 1){
+                cursor.moveToFirst()
+                return StationHistory(
+                        cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ID)),
+                        cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_SONG_NAME)),
+                        cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ARTIST_NAME)),
+                        cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_STATION_ID)),
+                        cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_PlAYED_COUNT)),
+                        Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
+                )
+            }
+            return null
+        }
     }
 }

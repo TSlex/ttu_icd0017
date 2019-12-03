@@ -75,9 +75,11 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         super.onCreate(savedInstanceState);
         setContentView(R.layout.radio_ui);
 
+        Log.d(TAG, "onCreate: connect animation");
         pulse = AnimationUtils.loadAnimation(this, R.anim.play_button_anim);
 
         //UI
+        Log.d(TAG, "onCreate: connect objects");
         playButton = findViewById(R.id.playButton);
         statisticButton = findViewById(R.id.statisticButton);
         stationImage = findViewById(R.id.stationImage);
@@ -89,17 +91,27 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         progressBar.setVisibility(View.INVISIBLE);
 
         //db context
+        Log.d(TAG, "onCreate: open radio repo");
         radioRepository = new RadioRepo(this).open();
 
+        Log.d(TAG, "onCreate: create radio station spinner");
         radioAdapter = new RadioStationAdapter(this, R.layout.radio_station_spinner_element, radioRepository.getAll());
         radioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         stationSpinner.setAdapter(radioAdapter);
         stationSpinner.setOnItemSelectedListener(this);
 
+        Log.d(TAG, "onCreate: get current station");
         if (currentStation == null) {
             currentStation = ((RadioStation) stationSpinner.getSelectedItem());
-        } else {
+        }
+        else {
             stationSpinner.setSelection(currentStation.getId() - 1);
+        }
+
+        //station may still be null
+        if (currentStation != null) {
+            Log.d(TAG, "onCreate: get last song for this station");
+            getLastSong();
         }
 
         if (stationSpinner.getSelectedItem() != null) {
@@ -107,6 +119,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         }
 
         //filters
+        Log.d(TAG, "onCreate: add intent filters");
         intentFilter.addAction(IntentActions.INTENT_PLAYER_PLAYING.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_BUFFERING.getAction());
         intentFilter.addAction(IntentActions.INTENT_PLAYER_STOPPED.getAction());
@@ -116,6 +129,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
 
         //permission for phone calls
+        Log.d(TAG, "onCreate: request permission if needed");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_DENIED ||
                     checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_DENIED) {
@@ -129,16 +143,14 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy");
-
+        Log.d(TAG, "onDestroy: unregister broadcast manager");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver);
         super.onDestroy();
     }
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause");
-
+        Log.d(TAG, "onPause: unregister broadcast manager");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver);
         super.onPause();
     }
@@ -146,27 +158,27 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
-
+        Log.d(TAG, "onResume: send player update request");
         LocalBroadcastManager
                 .getInstance(getApplicationContext())
                 .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_UPDATE.getAction()));
 
+        Log.d(TAG, "onResume: register local broadcast manager");
         LocalBroadcastManager.getInstance(this).registerReceiver(localReceiver, intentFilter);
         updateUI();
     }
 
     public void playButtonClick(View view) {
-        Log.d(TAG, "playButtonClick");
-
         switch (status) {
             case PLAYER_STATUS_PLAYING:
+                Log.d(TAG, "playButtonClick: require player to stop");
                 LocalBroadcastManager
                         .getInstance(getApplicationContext())
                         .sendBroadcast(new Intent(IntentActions.INTENT_UI_STOP.getAction()));
                 break;
             case PLAYER_STATUS_STOPPED:
                 //start stream
+                Log.d(TAG, "playButtonClick: require player to start");
                 Intent service = new Intent(this, RadioService.class);
                 service.putExtra("station_id", currentStation.getId());
                 startService(service);
@@ -175,6 +187,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
     }
 
     public void openStationHistory(View view) {
+        Log.d(TAG, "openStationHistory: open statistics");
         Intent history = new Intent(this, StationHistpryUi.class);
         history.putExtra("station_id", currentStation.getId());
         startActivity(history);
@@ -188,7 +201,8 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         RadioStation anison = new RadioStation(
                 "Anison.FM",
                 "http://anison.fm/status.php?widget=false",
-                "http://pool.anison.fm:9000/AniSonFM(128)",
+                "http://sky.babahhcdn.com/SKY",
+//                "http://pool.anison.fm:9000/AniSonFM(128)",
                 "\\{.+:\\s+|<[^<>]*>( — )?( &#151; )?(\"\\})?"
         );
 
@@ -247,9 +261,11 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
     }
 
     private void doMetaRequest() {
+        Log.d(TAG, "doMetaRequest: collecting meta");
         handler = WebReqHandler.getInstance(this);
         handler.getRequestQueue();
 
+        Log.d(TAG, "doMetaRequest: create request");
         StringRequest request = new StringRequest(
                 Request.Method.GET,
                 currentStation.getStationMeta(),
@@ -259,6 +275,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                     public void onResponse(String response) {
 
                         response = UnicEncoder.encode(response);
+                        Log.e(TAG, "onResponse: got response" + response);
 
 //                        String[] raw = response.split("\\{.+:\\s+|<[^<>]*>( — )?( &#151; )?(\"\\})?");
                         String[] raw = response.split(currentStation.getStationMetaRegex());
@@ -278,16 +295,19 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                         System.out.println("Song:" + song);
 
                         if (currentArtistTitle == null | currentSongTittle == null) {
+                            Log.d(TAG, "onResponseU: if there's no song playing before, add new one");
                             currentArtistTitle = artist;
                             currentSongTittle = song;
                             updateHistory();
                         }
                         else if (!currentArtistTitle.equals(artist) | !currentSongTittle.equals(song)){
+                            Log.d(TAG, "onResponseU: if song changes -> update");
                             currentArtistTitle = artist;
                             currentSongTittle = song;
                             updateHistory();
                         }
 //
+                        Log.d(TAG, "onResponse: update UI");
                         artistTitle.setText(artist.replaceAll("\\s+", " "));
                         songTitle.setText(song.replaceAll("\\s+", " "));
                     }
@@ -303,33 +323,10 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         handler.addToRequestQueue(request);
     }
 
-    private void updateHistory() {
-
-        HistoryRepo historyRepository = new HistoryRepo(this).open();
-
-        StationHistory history = historyRepository.getOne(currentStation.getId(), currentSongTittle, currentArtistTitle);
-
-        if (history == null){
-            historyRepository.add(new StationHistory(
-                    currentSongTittle,
-                    currentArtistTitle,
-                    currentStation.getId(),
-                    1,
-                    new Time(new Date().getTime())
-            ));
-        }
-        else{
-            history.setPlayedCount(history.getPlayedCount() + 1);
-            history.setLastPlayedTime(new Time(new Date().getTime()));
-            historyRepository.updateRecord(history);
-        }
-
-        historyRepository.close();
-    }
-
     private void updateUI() {
         switch (status) {
             case PLAYER_STATUS_PLAYING:
+                Log.d(TAG, "updateUI: update to PLAYING-state");
                 playButton.setText(R.string.play_button_stop);
                 playButton.startAnimation(pulse);
 
@@ -340,11 +337,13 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                 break;
 
             case PLAYER_STATUS_BUFFERING:
+                Log.d(TAG, "updateUI: update to BUFFERING-state");
                 playButton.setText(R.string.play_button_buffering);
                 progressBar.setVisibility(View.VISIBLE);
                 break;
 
             case PLAYER_STATUS_STOPPED:
+                Log.d(TAG, "updateUI: update to PLAY-READY-state");
                 playButton.setText(R.string.play_button_play);
                 playButton.clearAnimation();
 
@@ -361,18 +360,61 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         }
     }
 
+    private void updateHistory() {
+
+        Log.d(TAG, "updateHistory: open repo");
+        HistoryRepo historyRepository = new HistoryRepo(this).open();
+
+        Log.d(TAG, "updateHistory: get song if exist");
+        StationHistory history = historyRepository.getOne(currentStation.getId(), currentSongTittle, currentArtistTitle);
+
+        if (history == null){
+            Log.d(TAG, "updateHistory: no found song, add new one to history");
+            historyRepository.add(new StationHistory(
+                    currentSongTittle,
+                    currentArtistTitle,
+                    currentStation.getId(),
+                    1,
+                    new Time(new Date().getTime())
+            ));
+        }
+        else{
+            Log.d(TAG, "updateHistory: song was found, increasing play count");
+            Log.d(TAG, "updateHistory: initial count -> " + history.getPlayedCount());
+            history.setPlayedCount(history.getPlayedCount() + 1);
+            Log.d(TAG, "updateHistory: new  count -> " + history.getPlayedCount());
+            history.setLastPlayedTime(new Time(new Date().getTime()));
+            historyRepository.updateRecord(history);
+        }
+
+        Log.d(TAG, "updateHistory: closing repo");
+        historyRepository.close();
+    }
+
+    private void getLastSong(){
+        Log.d(TAG, "getLastSong: open repo");
+        HistoryRepo historyRepository = new HistoryRepo(this).open();
+        Log.d(TAG, "getLastSong: get last one if exist");
+        StationHistory lastSong = historyRepository.getLast(currentStation.getId());
+
+        if (lastSong == null){
+            Log.d(TAG, "getLastSong: no song found in history for this station");
+        }
+        else{
+            Log.d(TAG, "getLastSong: found last");
+            currentArtistTitle = lastSong.getArtistName();
+            currentSongTittle = lastSong.getSongName();
+        }
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-
-//        Log.d(TAG, "onRestoreInstanceState");
-//        outState.putInt("test", 1);
+        Log.d(TAG, "onSaveInstanceState");
 
         outState.putSerializable("status", status);
-
         outState.putString("artistTitle", String.valueOf(artistTitle.getText()));
         outState.putString("songTitle", String.valueOf(songTitle.getText()));
         outState.putInt("current_station_index", stationSpinner.getSelectedItemPosition());
-
 
         super.onSaveInstanceState(outState);
     }
@@ -380,7 +422,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
 
-//        Log.d(TAG, "onRestoreInstanceState: " + savedInstanceState.containsKey("test"));
+        Log.d(TAG, "onRestoreInstanceState");
 
         status = (PlayerStatus) savedInstanceState.getSerializable("status");
 
@@ -394,11 +436,13 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Log.d(TAG, "onItemSelected");
         LocalBroadcastManager
                 .getInstance(getApplicationContext())
                 .sendBroadcast(new Intent(IntentActions.INTENT_UI_STOP.getAction()));
         currentStation = ((RadioStation) parent.getItemAtPosition(position));
         stationImage.setImageBitmap(currentStation.getStationBitmap());
+        getLastSong();
     }
 
     @Override
@@ -412,12 +456,12 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
         public ActivityBroadcastReceiver() {
             super();
-            Log.d(TAG, "Created");
+            Log.d(TAG, "ActivityBroadcastReceiver: created");
         }
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "Reseived: " + intent.getAction());
+            Log.d(TAG, "Received: " + intent.getAction());
 
             String action = intent.getAction();
 
@@ -440,6 +484,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                     doMetaRequest();
                 }
 
+                Log.d(TAG, "onReceive: updating UI");
                 updateUI();
             }
         }
