@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="@string/pref_north_face"
+        android:title="TOGGLE NORTH-UP"
+        android:defaultValue="true">
+    </CheckBoxPreference>
+
+    <CheckBoxPreference
+        android:key="@string/pref_center_map"
+        android:title="TOGGLE MAP CENTERED"
+        android:defaultValue="true">
+    </CheckBoxPreference>
+
+    <CheckBoxPreference
+        android:key="@string/pref_compass"
+        android:title="TOGGLE ON-SCREEN COMPASS"
+        android:defaultValue="true">
+    </CheckBoxPreference>
+
+    <ListPreference
+        android:key="@string/pref_map_style"
+        android:title="MAP STYLE"
+        android:entries="@array/pref_map_style_titles"
+        android:entryValues="@array/pref_map_style_values"
+        android:defaultValue="@string/pref_map_default">
+    </ListPreference>
+
+</PreferenceScreen>

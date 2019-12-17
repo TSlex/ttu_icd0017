@@ -1,4 +1,25 @@
 <resources>
     <string name="app_name">LifeTrack</string>
     <string name="title_activity_maps">Map</string>
+
+    <!--    preferences-->
+    <string name="pref_north_face">north_face</string>
+    <string name="pref_center_map">center_map</string>
+    <string name="pref_compass">compass</string>
+
+    <string name="pref_map_style">map_style</string>
+
+    <string-array name="pref_map_style_titles">
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+
+    <string-array name="pref_map_style_values">
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+
+    <string name="pref_map_default">light</string>
+    <!--end preferences-->
+
 </resources>
