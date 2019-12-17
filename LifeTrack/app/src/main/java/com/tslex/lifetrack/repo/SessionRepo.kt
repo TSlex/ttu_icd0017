@@ -73,11 +73,15 @@ class SessionRepo(val context: Context) {
     }
 
     fun add(session: Session) {
+        db.beginTransaction()
         val contentValue = ContentValues()
         contentValue.put(DbHelper.SESSION_WAYPOINT_LAT, session.wLat)
         contentValue.put(DbHelper.SESSION_WAYPOINT_LNG, session.wLng)
         contentValue.put(DbHelper.SESSION_CREATING_TIME, session.creatingTime.toString())
+        contentValue.put(DbHelper.SESSION_WAYPOINT_SET, (session.isWayPointSet.toInt()))
         db.insert(DbHelper.SESSION_TABLE_NAME, null, contentValue)
+        db.setTransactionSuccessful()
+        db.endTransaction()
     }
 
     fun getLast(): Session?{
@@ -86,7 +90,7 @@ class SessionRepo(val context: Context) {
             null)
 
         cursor.use { cursor ->
-            if (cursor.count > 1){
+            if (cursor.count > 0){
                 cursor.moveToFirst()
                 return Session(
                     cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_ID)),
@@ -99,4 +103,22 @@ class SessionRepo(val context: Context) {
             return null
         }
     }
+
+    fun update(session: Session){
+        db.beginTransaction()
+        val contentValue = ContentValues()
+        contentValue.put(DbHelper.SESSION_WAYPOINT_LAT, session.wLat)
+        contentValue.put(DbHelper.SESSION_WAYPOINT_LNG, session.wLng)
+        contentValue.put(DbHelper.SESSION_CREATING_TIME, session.creatingTime.toString())
+        contentValue.put(DbHelper.SESSION_WAYPOINT_SET, (session.isWayPointSet.toInt()))
+
+        db.update(DbHelper.SESSION_TABLE_NAME, contentValue, "" +
+                "${DbHelper.SESSION_ID} = ${session.id}", null)
+        db.setTransactionSuccessful()
+        db.endTransaction()
+    }
+}
+
+private fun Boolean.toInt(): Int? {
+    return if (this) 1 else 0
 }

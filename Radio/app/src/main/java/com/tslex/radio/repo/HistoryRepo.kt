@@ -80,7 +80,7 @@ class HistoryRepo(val context: Context) {
                 null)
 
         cursor.use { cursor ->
-            if (cursor.count == 1){
+            if (cursor.count > 0){
                 cursor.moveToFirst()
                 return StationHistory(
                         cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ID)),
@@ -175,7 +175,7 @@ class HistoryRepo(val context: Context) {
                 null)
 
         cursor.use { cursor ->
-            if (cursor.count > 1){
+            if (cursor.count > 0){
                 cursor.moveToFirst()
                 return StationHistory(
                         cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ID)),

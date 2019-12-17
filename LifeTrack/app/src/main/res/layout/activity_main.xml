@@ -82,12 +82,85 @@
 
     <ImageView
         android:id="@+id/compass"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="70dp"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        map:srcCompat="@drawable/compas" />
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="70dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/compass_v2"/>
+
+
+    <ImageView
+        android:id="@+id/aim"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/target"
+        tools:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/buttonZoom"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="70dp"
+        android:background="@null"
+        android:onClick="onZoomButtonClicked"
+        android:scaleType="fitCenter"
+        android:src="@drawable/zoom"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="70dp"
+        android:layout_marginRight="10dp">
+
+        <ImageButton
+            android:id="@+id/buttonWp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@null"
+            android:onClick="onWpButtonClicked"
+            android:scaleType="fitCenter"
+            android:src="@drawable/marker"
+            tools:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/buttonCp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@null"
+            android:onClick="onCpButtonClicked"
+            android:scaleType="fitCenter"
+            android:src="@drawable/checkpoint"
+            tools:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/buttonCommit"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@null"
+            android:onClick="onCommitButtonClicked"
+            android:scaleType="fitCenter"
+            android:src="@drawable/checked"
+            tools:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/buttonCancel"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@null"
+            android:onClick="onCancelButtonClicked"
+            android:scaleType="fitCenter"
+            android:src="@drawable/cancel"
+            tools:visibility="gone" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="180dp"
@@ -113,6 +186,7 @@
                 android:text=">from start" />
 
             <TextView
+                android:id="@+id/dirDirStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -126,9 +200,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=">from start" />
+                android:text=">from last cp" />
 
             <TextView
+                android:id="@+id/dirDirCp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -142,9 +217,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=">from start" />
+                android:text=">from last wp" />
 
             <TextView
+                android:id="@+id/dirDirWp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -167,6 +243,7 @@
                 android:text=">from start" />
 
             <TextView
+                android:id="@+id/calDirStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -180,9 +257,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=">from start" />
+                android:text=">from last cp" />
 
             <TextView
+                android:id="@+id/calDirCp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -196,9 +274,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=">from start" />
+                android:text=">from last wp" />
 
             <TextView
+                android:id="@+id/calDirWp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -221,6 +300,7 @@
                 android:text=">from start" />
 
             <TextView
+                android:id="@+id/paceStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -234,9 +314,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=">from start" />
+                android:text=">from last cp" />
 
             <TextView
+                android:id="@+id/paceCp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -250,9 +331,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=">from start" />
+                android:text=">from last wp" />
 
             <TextView
+                android:id="@+id/paceWp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -270,6 +352,7 @@
                 android:text="Time elapsed:" />
 
             <TextView
+                android:id="@+id/totalTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"

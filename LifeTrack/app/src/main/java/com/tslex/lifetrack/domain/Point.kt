@@ -1,6 +1,7 @@
 package com.tslex.lifetrack.domain
 
 import java.sql.Time
+import java.util.*
 
 class Point {
     var id: Int = 0
@@ -26,11 +27,11 @@ class Point {
         this.timeOfCreating = timeOfCreating
     }
 
-    constructor(sessionId: Int, typeId: Int, pLat: Double, pLng: Double, timeOfCreating: Time) {
+    constructor(sessionId: Int, typeId: Int, pLat: Double, pLng: Double) {
         this.sessionId = sessionId
         this.typeId = typeId
         this.pLat = pLat
         this.pLng = pLng
-        this.timeOfCreating = timeOfCreating
+        this.timeOfCreating = Time(Date().time)
     }
 }

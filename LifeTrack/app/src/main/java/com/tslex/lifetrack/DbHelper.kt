@@ -15,7 +15,7 @@ class DbHelper(context: Context) : SQLiteOpenHelper(
 ) {
     companion object {
         const val DATABASE_NAME = "appdb.db"
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 9
 
         //Session
         const val SESSION_TABLE_NAME = "SESSION"
@@ -46,7 +46,7 @@ class DbHelper(context: Context) : SQLiteOpenHelper(
                     "$SESSION_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "$SESSION_WAYPOINT_LAT REAL NOT NULL, " +
                     "$SESSION_WAYPOINT_LNG REAL NOT NULL, " +
-                    "$SESSION_CREATING_TIME TIME NOT NULL" +
+                    "$SESSION_CREATING_TIME TIME NOT NULL, " +
                     "$SESSION_WAYPOINT_SET INTEGER NOT NULL" +
                     ")"
         const val SQL_CREATE_POINT_TABLE =
@@ -89,9 +89,9 @@ class DbHelper(context: Context) : SQLiteOpenHelper(
     }
 
     private fun init(db: SQLiteDatabase?){
-        db?.execSQL("INSERT INTO $POINT_TYPE_TABLE_NAME ($POINT_TYPE_ID, $POINT_TYPE) VALUES (0, checkpoint)")
-        db?.execSQL("INSERT INTO $POINT_TYPE_TABLE_NAME ($POINT_TYPE_ID, $POINT_TYPE) VALUES (1, route_walking)")
-        db?.execSQL("INSERT INTO $POINT_TYPE_TABLE_NAME ($POINT_TYPE_ID, $POINT_TYPE) VALUES (2, route_running)")
-        db?.execSQL("INSERT INTO $POINT_TYPE_TABLE_NAME ($POINT_TYPE_ID, $POINT_TYPE) VALUES (3, route_to_fast)")
+        db?.execSQL("INSERT INTO $POINT_TYPE_TABLE_NAME ($POINT_TYPE_ID, $POINT_TYPE) VALUES (1, 'checkpoint')")
+        db?.execSQL("INSERT INTO $POINT_TYPE_TABLE_NAME ($POINT_TYPE_ID, $POINT_TYPE) VALUES (2, 'route_walking')")
+        db?.execSQL("INSERT INTO $POINT_TYPE_TABLE_NAME ($POINT_TYPE_ID, $POINT_TYPE) VALUES (3, 'route_running')")
+        db?.execSQL("INSERT INTO $POINT_TYPE_TABLE_NAME ($POINT_TYPE_ID, $POINT_TYPE) VALUES (4, 'route_to_fast')")
     }
 }

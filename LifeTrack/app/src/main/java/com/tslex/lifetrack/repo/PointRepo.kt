@@ -70,7 +70,7 @@ class PointRepo(val context: Context) {
             null)
 
         cursor.use { cursor ->
-            if (cursor.count > 1){
+            if (cursor.count > 0){
                 cursor.moveToFirst()
                 return Point(
                     cursor.getInt(cursor.getColumnIndex(DbHelper.POINT_ID)),
@@ -92,7 +92,7 @@ class PointRepo(val context: Context) {
             null)
 
         cursor.use { cursor ->
-            if (cursor.count > 1){
+            if (cursor.count > 0){
                 cursor.moveToFirst()
                 return Point(
                     cursor.getInt(cursor.getColumnIndex(DbHelper.POINT_ID)),
