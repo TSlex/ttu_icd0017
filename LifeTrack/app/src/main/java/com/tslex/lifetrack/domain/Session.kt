@@ -8,10 +8,10 @@ class Session {
     var id: Int = 0
     var wLat: Double
     var wLng: Double
-    var creatingTime: Time
+    var creatingTime: Date
     var isWayPointSet: Boolean
 
-    constructor(id: Int, wLat: Double, wLng: Double, creatingTime: Time, isWayPointSet: Boolean) {
+    constructor(id: Int, wLat: Double, wLng: Double, creatingTime: Date, isWayPointSet: Boolean) {
         this.id = id
         this.wLat = wLat
         this.wLng = wLng

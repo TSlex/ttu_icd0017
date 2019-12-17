@@ -90,7 +90,7 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         intentFilter.addAction(Intents.INTENT_UI_UPDATE_LOCATION.getAction())
         intentFilter.addAction(Intents.INTENT_UI_UPDATE_META.getAction())
         intentFilter.addAction(Intents.INTENT_UI_PLACE_CP.getAction())
-//        intentFilter.addAction(Intents.INTENT_UI_PLACE_WP.getAction())
+        intentFilter.addAction(Intents.INTENT_UI_PLACE_WP.getAction())
         intentFilter.addAction(Intents.INTENT_COMPASS_UPDATE.getAction())
 
         LocalBroadcastManager.getInstance(applicationContext)
@@ -141,46 +141,46 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         }
     }
 
-    fun onCommitButtonClicked(view: View) {
-
-        when (state) {
-            UIState.ADDING_WAYPOINT -> {
+//    fun onCommitButtonClicked(view: View) {
+//
+//        when (state) {
+//            UIState.ADDING_WAYPOINT -> {
+////                LocalBroadcastManager.getInstance(applicationContext)
+////                    .sendBroadcast(Intent(Intents.INTENT_ADD_WP.getAction()))
+//
+//                val intent = Intent(Intents.INTENT_ADD_WP.getAction())
+//                val tmp = myMap.cameraPosition
+//                intent.putExtra("lat", tmp.target.latitude)
+//                intent.putExtra("lng", tmp.target.longitude)
+//                placeWp(tmp.target.latitude, tmp.target.longitude)
+//
 //                LocalBroadcastManager.getInstance(applicationContext)
-//                    .sendBroadcast(Intent(Intents.INTENT_ADD_WP.getAction()))
-
-                val intent = Intent(Intents.INTENT_ADD_WP.getAction())
-                val tmp = myMap.cameraPosition
-                intent.putExtra("lat", tmp.target.latitude)
-                intent.putExtra("lng", tmp.target.longitude)
-                placeWp(tmp.target.latitude, tmp.target.longitude)
-
-                LocalBroadcastManager.getInstance(applicationContext)
-                    .sendBroadcast(intent)
-            }
-            UIState.ADDING_CHECKPOINT -> {
-                LocalBroadcastManager.getInstance(applicationContext)
-                    .sendBroadcast(Intent(Intents.INTENT_ADD_CP.getAction()))
-            }
-        }
-
-        state = UIState.NONE
-
-        buttonCp.visibility = View.VISIBLE
-        buttonWp.visibility = View.VISIBLE
-        buttonCommit.visibility = View.GONE
-        buttonCancel.visibility = View.GONE
-        aim.visibility = View.GONE
-    }
-
-    fun onCancelButtonClicked(view: View) {
-        state = UIState.NONE
-
-        buttonCp.visibility = View.VISIBLE
-        buttonWp.visibility = View.VISIBLE
-        buttonCommit.visibility = View.GONE
-        buttonCancel.visibility = View.GONE
-        aim.visibility = View.GONE
-    }
+//                    .sendBroadcast(intent)
+//            }
+//            UIState.ADDING_CHECKPOINT -> {
+//                LocalBroadcastManager.getInstance(applicationContext)
+//                    .sendBroadcast(Intent(Intents.INTENT_ADD_CP.getAction()))
+//            }
+//        }
+//
+//        state = UIState.NONE
+//
+//        buttonCp.visibility = View.VISIBLE
+//        buttonWp.visibility = View.VISIBLE
+//        buttonCommit.visibility = View.GONE
+//        buttonCancel.visibility = View.GONE
+//        aim.visibility = View.GONE
+//    }
+//
+//    fun onCancelButtonClicked(view: View) {
+//        state = UIState.NONE
+//
+//        buttonCp.visibility = View.VISIBLE
+//        buttonWp.visibility = View.VISIBLE
+//        buttonCommit.visibility = View.GONE
+//        buttonCancel.visibility = View.GONE
+//        aim.visibility = View.GONE
+//    }
 
     fun onCpButtonClicked(view: View) {
 //        state = UIState.ADDING_CHECKPOINT
@@ -196,13 +196,16 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     fun onWpButtonClicked(view: View) {
-        state = UIState.ADDING_WAYPOINT
+//        state = UIState.ADDING_WAYPOINT
+//
+//        buttonCp.visibility = View.GONE
+//        buttonWp.visibility = View.GONE
+//        buttonCommit.visibility = View.VISIBLE
+//        buttonCancel.visibility = View.VISIBLE
+//        aim.visibility = View.VISIBLE
 
-        buttonCp.visibility = View.GONE
-        buttonWp.visibility = View.GONE
-        buttonCommit.visibility = View.VISIBLE
-        buttonCancel.visibility = View.VISIBLE
-        aim.visibility = View.VISIBLE
+        LocalBroadcastManager.getInstance(applicationContext)
+            .sendBroadcast(Intent(Intents.INTENT_ADD_WP.getAction()))
     }
 
     fun onStartButtonClicked(view: View) {
@@ -408,17 +411,17 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
                     calDirCp.text = "${intent.getIntExtra("calDirCp", 0)}m"
                     calDirWp.text = "${intent.getIntExtra("calDirWp", 0)}m"
 
-//                    paceStart.text = Time.valueOf(intent.getIntExtra("paceStart", 0).toString()).toString()
-//                    paceCp.text = Time.valueOf(intent.getIntExtra("paceCp", 0).toString()).toString()
-//                    paceWp.text = Time.valueOf(intent.getIntExtra("paceWp", 0).toString()).toString()
+//                    paceStart.text = intent.getStringExtra("paceStart")
+//                    paceCp.text = intent.getStringExtra("paceCp")
+//                    paceWp.text = intent.getStringExtra("paceWp")
 
-//                    totalTime.text = intent.getLongExtra("totalTime", 0).toString()
+                    totalTime.text = intent.getStringExtra("totalTime")
                 }
-//                Intents.INTENT_UI_PLACE_WP.getAction() -> {
-//                    val latitude = intent.getDoubleExtra("lat", .0)
-//                    val longitude = intent.getDoubleExtra("lng", .0)
-//                    placeWp(latitude, longitude)
-//                }
+                Intents.INTENT_UI_PLACE_WP.getAction() -> {
+                    val latitude = intent.getDoubleExtra("lat", .0)
+                    val longitude = intent.getDoubleExtra("lng", .0)
+                    placeWp(latitude, longitude)
+                }
                 Intents.INTENT_UI_PLACE_CP.getAction() -> {
                     val latitude = intent.getDoubleExtra("lat", .0)
                     val longitude = intent.getDoubleExtra("lng", .0)

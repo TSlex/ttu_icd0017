@@ -9,7 +9,7 @@ class Point {
     var typeId: Int
     var pLat: Double
     var pLng: Double
-    var timeOfCreating: Time
+    var timeOfCreating: Date
 
     constructor(
         id: Int,
@@ -17,7 +17,7 @@ class Point {
         typeId: Int,
         pLat: Double,
         pLng: Double,
-        timeOfCreating: Time
+        timeOfCreating: Date
     ) {
         this.id = id
         this.sessionId = sessionId

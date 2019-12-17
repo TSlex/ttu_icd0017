@@ -15,8 +15,9 @@
         android:text="settings" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/buttonExpot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="onExportButtonClicked"
         android:text="export" />
 </LinearLayout>

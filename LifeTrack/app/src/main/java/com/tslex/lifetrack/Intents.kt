@@ -10,6 +10,7 @@ enum class Intents(private val action: String) {
     INTENT_ADD_WP           ("lifetrack.service.add.wp"),
 
     INTENT_UI_PLACE_CP      ("lifetrack.service.tracking.ui.place.cp"),
+    INTENT_UI_PLACE_WP      ("lifetrack.service.tracking.ui.place.wp"),
 
     INTENT_UI_UPDATE_LOCATION        ("lifetrack.service.tracking.ui.update.location"),
     INTENT_UI_UPDATE_META        ("lifetrack.service.tracking.ui.update.meta"),

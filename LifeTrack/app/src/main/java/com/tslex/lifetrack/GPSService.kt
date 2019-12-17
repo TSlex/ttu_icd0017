@@ -16,11 +16,13 @@ import com.tslex.lifetrack.domain.Session
 import com.tslex.lifetrack.repo.PTypeRepo
 import com.tslex.lifetrack.repo.PointRepo
 import com.tslex.lifetrack.repo.SessionRepo
+import java.lang.Exception
+import java.sql.Time
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
-import kotlin.math.log
 
 class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
@@ -57,6 +59,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         //setup location manager and provider
         setUpLocations()
     }
+
 
     private fun setUpLocations() {
 //        criteria = Criteria()
@@ -100,7 +103,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
             if (firstLocation != null && lastLocation != null){
                 meta.putExtra("dirDirStart",
-                    GPSTools.getDistance(
+                    GPSTools.getDirectDistance(
                         firstLocation!!.latitude,
                         firstLocation!!.longitude,
                         lastLocation!!.latitude,
@@ -109,7 +112,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
             if (lastCp != null && lastLocation != null){
                 meta.putExtra("dirDirCp",
-                    GPSTools.getDistance(
+                    GPSTools.getDirectDistance(
                         lastCp!!.pLat,
                         lastCp!!.pLng,
                         lastLocation!!.latitude,
@@ -118,7 +121,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
             if (currentSession.isWayPointSet && lastLocation != null){
                 meta.putExtra("dirDirWp",
-                    GPSTools.getDistance(
+                    GPSTools.getDirectDistance(
                         currentSession!!.wLat,
                         currentSession!!.wLng,
                         lastLocation!!.latitude,
@@ -133,7 +136,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 //            meta.putExtra("paceCp", )
 //            meta.putExtra("paceWp", )
 
-//            meta.putExtra("totalTime", Date().time - currentSession.creatingTime.time)
+            meta.putExtra("totalTime", Time(Date().time - currentSession.creatingTime.time).toString())
 
 
             LocalBroadcastManager.getInstance(applicationContext)
@@ -173,24 +176,26 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
             .sendBroadcast(intent)
     }
 
-    private fun addWp(latitude: Double, longitude: Double){
+//    private fun addWp(latitude: Double, longitude: Double){
+    private fun addWp(){
+
+        if (lastLocation == null) return
+
+        val tmp = lastLocation!!
 
         val sessions = SessionRepo(this).open()
         currentSession.isWayPointSet = true
-        currentSession.wLat = latitude
-        currentSession.wLng = longitude
-
-        Log.d(TAG, latitude.toString())
-        Log.d(TAG, longitude.toString())
-
+        currentSession.wLat = tmp.latitude
+        currentSession.wLng = tmp.longitude
         sessions.update(currentSession)
         sessions.close()
-//        val intent = Intent(Intents.INTENT_UI_PLACE_WP.getAction())
-//        intent.putExtra("lat", tmp.latitude)
-//        intent.putExtra("lng", tmp.longitude)
-//
-//        LocalBroadcastManager.getInstance(applicationContext)
-//            .sendBroadcast(intent)
+
+        val intent = Intent(Intents.INTENT_UI_PLACE_WP.getAction())
+        intent.putExtra("lat", tmp.latitude)
+        intent.putExtra("lng", tmp.longitude)
+
+        LocalBroadcastManager.getInstance(applicationContext)
+            .sendBroadcast(intent)
     }
 
     override fun onLocationChanged(location: Location?) {
@@ -238,11 +243,17 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
                 }
                 Intents.INTENT_TRACKING_STOP.getAction() -> {
                     stopListener()
+                    try {
+                        thread.shutdown()
+                    }catch (ex: Exception){
+
+                    }
                 }
                 Intents.INTENT_ADD_WP.getAction() -> {
-                    val latitude = intent.getDoubleExtra("lat", .0)
-                    val longitude = intent.getDoubleExtra("lng", .0)
-                    addWp(latitude, longitude)
+//                    val latitude = intent.getDoubleExtra("lat", .0)
+//                    val longitude = intent.getDoubleExtra("lng", .0)
+//                    addWp(latitude, longitude)
+                    addWp()
                 }
                 Intents.INTENT_ADD_CP.getAction() -> {
                     addCp()
