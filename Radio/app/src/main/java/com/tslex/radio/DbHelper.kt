@@ -72,4 +72,10 @@ class DbHelper(context: Context) :
         db?.execSQL(SQL_STATION_HISTORY_DELETE_TABLE)
         onCreate(db)
     }
+
+//    private fun addInitData(db: SQLiteDatabase?){
+//        db?.execSQL("INSERT INTO $RADIO_STATION_TABLE_NAME " +
+//                "($STa, $POINT_TYPE) " +
+//                "VALUES (1, 'checkpoint')")
+//    }
 }

@@ -104,10 +104,11 @@ class HistoryRepo(val context: Context) {
         contentValue.put(DbHelper.STATION_HISTORY_PlAYED_COUNT, history.playedCount)
         contentValue.put(DbHelper.STATION_HISTORY_LAST_PLAYED, history.lastPlayedTime.toString())
 
+        db.beginTransaction()
         db.update(DbHelper.STATION_HISTORY_TABLE_NAME, contentValue, "" +
-                "${DbHelper.STATION_HISTORY_PlAYED_COUNT} = ${history.stationId} AND " +
                 "${DbHelper.STATION_HISTORY_ID} = ${history.id}", null)
-        db.close()
+        db.setTransactionSuccessful()
+        db.endTransaction()
     }
 
     fun getByStationId(stationId: Int): ArrayList<StationHistory> {
