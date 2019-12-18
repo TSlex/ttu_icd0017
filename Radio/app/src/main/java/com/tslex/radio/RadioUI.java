@@ -103,16 +103,15 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         Log.d(TAG, "onCreate: get current station");
         if (currentStation == null) {
             currentStation = ((RadioStation) stationSpinner.getSelectedItem());
-        }
-        else {
+        } else {
             stationSpinner.setSelection(currentStation.getId() - 1);
         }
 
-        //station may still be null
-        if (currentStation != null) {
-            Log.d(TAG, "onCreate: get last song for this station");
-            getLastSong();
-        }
+//        //station may still be null
+//        if (currentStation != null) {
+//            Log.d(TAG, "onCreate: get last song for this station");
+//            getLastSong();
+//        }
 
         if (stationSpinner.getSelectedItem() != null) {
             stationImage.setImageBitmap(((RadioStation) stationSpinner.getSelectedItem()).getImage());
@@ -179,6 +178,8 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
             case PLAYER_STATUS_STOPPED:
                 //start stream
                 Log.d(TAG, "playButtonClick: require player to start");
+                if (currentStation == null) return;
+                getLastSong();
                 Intent service = new Intent(this, RadioService.class);
                 service.putExtra("station_id", currentStation.getId());
                 startService(service);
@@ -287,20 +288,26 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                             }
                         }
 
-                        String artist = formated.get(0);
-                        String song = formated.get(1);
+                        String artist = "";
+                        String song = "";
+
+                        if (formated.size() > 1) {
+                            artist = formated.get(0);
+                            song = formated.get(1);
+                        }
 
                         Log.d(TAG, Arrays.toString(raw));
                         System.out.println("Artist:" + artist);
                         System.out.println("Song:" + song);
+                        Log.d(TAG, "last artist title: " + currentArtistTitle);
+                        Log.d(TAG, "last song title: " + currentSongTittle);
 
                         if (currentArtistTitle == null | currentSongTittle == null) {
                             Log.d(TAG, "onResponseU: if there's no song playing before, add new one");
                             currentArtistTitle = artist;
                             currentSongTittle = song;
                             updateHistory();
-                        }
-                        else if (!currentArtistTitle.equals(artist) | !currentSongTittle.equals(song)){
+                        } else if (!currentArtistTitle.equals(artist) | !currentSongTittle.equals(song)) {
                             Log.d(TAG, "onResponseU: if song changes -> update");
                             currentArtistTitle = artist;
                             currentSongTittle = song;
@@ -368,7 +375,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         Log.d(TAG, "updateHistory: get song if exist");
         StationHistory history = historyRepository.getOne(currentStation.getId(), currentSongTittle, currentArtistTitle);
 
-        if (history == null){
+        if (history == null) {
             Log.d(TAG, "updateHistory: no found song, add new one to history");
             historyRepository.add(new StationHistory(
                     currentSongTittle,
@@ -377,8 +384,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                     1,
                     new java.sql.Timestamp(new Date().getTime())
             ));
-        }
-        else{
+        } else {
             Log.d(TAG, "updateHistory: song was found, increasing play count");
             Log.d(TAG, "updateHistory: initial count -> " + history.getPlayedCount());
             history.setPlayedCount(history.getPlayedCount() + 1);
@@ -391,16 +397,15 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         historyRepository.close();
     }
 
-    private void getLastSong(){
+    private void getLastSong() {
         Log.d(TAG, "getLastSong: open repo");
         HistoryRepo historyRepository = new HistoryRepo(this).open();
         Log.d(TAG, "getLastSong: get last one if exist");
         StationHistory lastSong = historyRepository.getLast(currentStation.getId());
 
-        if (lastSong == null){
+        if (lastSong == null) {
             Log.d(TAG, "getLastSong: no song found in history for this station");
-        }
-        else{
+        } else {
             Log.d(TAG, "getLastSong: found last");
             currentArtistTitle = lastSong.getArtistName();
             currentSongTittle = lastSong.getSongName();
@@ -442,7 +447,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                 .sendBroadcast(new Intent(IntentActions.INTENT_UI_STOP.getAction()));
         currentStation = ((RadioStation) parent.getItemAtPosition(position));
         stationImage.setImageBitmap(currentStation.getStationBitmap());
-        getLastSong();
+//        getLastSong();
     }
 
     @Override
