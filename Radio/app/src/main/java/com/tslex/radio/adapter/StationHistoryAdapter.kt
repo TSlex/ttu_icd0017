@@ -10,6 +10,7 @@ import com.tslex.radio.R
 import com.tslex.radio.domain.StationHistory
 import com.tslex.radio.repo.HistoryRepo
 import kotlinx.android.synthetic.main.station_history_item.view.*
+import java.text.SimpleDateFormat
 
 class StationHistoryAdapter(context: Context, private val repo: HistoryRepo, private val currentStation: Int) :
     RecyclerView.Adapter<StationHistoryAdapter.ViewHolder>(){
@@ -34,7 +35,7 @@ class StationHistoryAdapter(context: Context, private val repo: HistoryRepo, pri
         holder.itemView.songName.text = history.songName
         holder.itemView.artistName.text = history.artistName
         holder.itemView.playCount.text = history.playedCount.toString()
-        holder.itemView.lastPlayed.text = history.lastPlayedTime.toString()
+        holder.itemView.lastPlayed.text = SimpleDateFormat("H:mm").format(history.lastPlayedTime)
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

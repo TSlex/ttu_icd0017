@@ -8,7 +8,9 @@ import android.util.Log
 import com.tslex.radio.DbHelper
 import com.tslex.radio.domain.RadioStation
 import com.tslex.radio.domain.StationHistory
+import java.sql.Date
 import java.sql.Time
+import java.sql.Timestamp
 
 class HistoryRepo(val context: Context) {
 
@@ -88,7 +90,7 @@ class HistoryRepo(val context: Context) {
                         cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ARTIST_NAME)),
                         cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_STATION_ID)),
                         cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_PlAYED_COUNT)),
-                        Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
+                        Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
                 )
             }
             return null
@@ -127,7 +129,7 @@ class HistoryRepo(val context: Context) {
                                     cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ARTIST_NAME)),
                                     cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_STATION_ID)),
                                     cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_PlAYED_COUNT)),
-                                    Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
+                                    Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
                             )
                     )
                 }
@@ -161,7 +163,7 @@ class HistoryRepo(val context: Context) {
                                 cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ARTIST_NAME)),
                                 cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_STATION_ID)),
                                 cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_PlAYED_COUNT)),
-                                Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
+                                Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
                         )
                 )
             } while (cursor.moveToNext())
@@ -184,7 +186,7 @@ class HistoryRepo(val context: Context) {
                         cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_ARTIST_NAME)),
                         cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_STATION_ID)),
                         cursor.getInt(cursor.getColumnIndex(DbHelper.STATION_HISTORY_PlAYED_COUNT)),
-                        Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
+                        Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.STATION_HISTORY_LAST_PLAYED)))
                 )
             }
             return null

@@ -36,7 +36,7 @@ import com.tslex.radio.repo.RadioRepo;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -375,7 +375,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
                     currentArtistTitle,
                     currentStation.getId(),
                     1,
-                    new Time(new Date().getTime())
+                    new java.sql.Timestamp(new Date().getTime())
             ));
         }
         else{
@@ -383,7 +383,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
             Log.d(TAG, "updateHistory: initial count -> " + history.getPlayedCount());
             history.setPlayedCount(history.getPlayedCount() + 1);
             Log.d(TAG, "updateHistory: new  count -> " + history.getPlayedCount());
-            history.setLastPlayedTime(new Time(new Date().getTime()));
+            history.setLastPlayedTime(new java.sql.Timestamp(new Date().getTime()));
             historyRepository.updateRecord(history);
         }
 

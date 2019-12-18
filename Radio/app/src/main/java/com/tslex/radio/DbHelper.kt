@@ -4,7 +4,6 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-
 class DbHelper(context: Context) :
         SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -12,7 +11,7 @@ class DbHelper(context: Context) :
         private val TAG = this::class.java.canonicalName
 
         const val DATABASE_NAME = "appdb.db"
-        const val DATABASE_VERSION = 2
+        const val DATABASE_VERSION = 4
 
         //RadioStation
         const val RADIO_STATION_TABLE_NAME = "RADIO_STATION"
