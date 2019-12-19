@@ -7,6 +7,7 @@ import android.util.Log
 import com.tslex.lifetrack.DbHelper
 import com.tslex.lifetrack.domain.Point
 import java.sql.Time
+import java.sql.Timestamp
 
 class PointRepo(val context: Context) {
     private var TAG = this::class.java.canonicalName
@@ -33,8 +34,8 @@ class PointRepo(val context: Context) {
 
         val radioStations = ArrayList<Point>()
 
-        val cursor = db.rawQuery("SELECT * FROM ${DbHelper.POINT_TABLE_NAME}" +
-                "where ${DbHelper.POINT_SESSION_ID} == $sessionId ", null)
+        val cursor = db.rawQuery("SELECT * FROM ${DbHelper.POINT_TABLE_NAME} " +
+                "where ${DbHelper.POINT_SESSION_ID} = $sessionId ", null)
 
         Log.d(TAG, "counting...")
 
@@ -53,7 +54,7 @@ class PointRepo(val context: Context) {
                             cursor.getInt(cursor.getColumnIndex(DbHelper.POINT_PTYPE_ID)),
                             cursor.getDouble(cursor.getColumnIndex(DbHelper.POINT_LAT)),
                             cursor.getDouble(cursor.getColumnIndex(DbHelper.POINT_LNG)),
-                            Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.POINT_CREATING_TIME)))
+                            Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.POINT_CREATING_TIME)))
                         )
                     )
                 } while (cursor.moveToNext())
@@ -65,7 +66,7 @@ class PointRepo(val context: Context) {
 
     fun getLast(sessionId: Int): Point?{
         val cursor = db.rawQuery("select * from ${DbHelper.SESSION_TABLE_NAME} " +
-                "where ${DbHelper.POINT_SESSION_ID} == $sessionId " +
+                "where ${DbHelper.POINT_SESSION_ID} = $sessionId " +
                 "order by ${DbHelper.SESSION_ID} DESC",
             null)
 
@@ -78,7 +79,7 @@ class PointRepo(val context: Context) {
                     cursor.getInt(cursor.getColumnIndex(DbHelper.POINT_PTYPE_ID)),
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.POINT_LAT)),
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.POINT_LNG)),
-                    Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.POINT_CREATING_TIME)))
+                    Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.POINT_CREATING_TIME)))
                 )
             }
             return null
@@ -87,7 +88,7 @@ class PointRepo(val context: Context) {
 
     fun getFirst(sessionId: Int): Point?{
         val cursor = db.rawQuery("select * from ${DbHelper.SESSION_TABLE_NAME} " +
-                "where ${DbHelper.POINT_SESSION_ID} == $sessionId " +
+                "where ${DbHelper.POINT_SESSION_ID} = $sessionId " +
                 "order by ${DbHelper.SESSION_ID}",
             null)
 
@@ -100,7 +101,7 @@ class PointRepo(val context: Context) {
                     cursor.getInt(cursor.getColumnIndex(DbHelper.POINT_PTYPE_ID)),
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.POINT_LAT)),
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.POINT_LNG)),
-                    Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.POINT_CREATING_TIME)))
+                    Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.POINT_CREATING_TIME)))
                 )
             }
             return null

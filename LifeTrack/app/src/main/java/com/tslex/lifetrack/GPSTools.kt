@@ -1,7 +1,9 @@
 package com.tslex.lifetrack
 
 import android.location.Criteria
-import android.util.Log
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.*
 
 
@@ -28,7 +30,19 @@ class GPSTools {
             return 0
         }
 
-        fun getCriteria() : Criteria{
+        fun getTimeBetween(time1: Timestamp, time2: Timestamp): String{
+            val diff = abs(time1.time - time2.time)
+            val sdf = SimpleDateFormat("HH:mm:ss")
+            sdf.timeZone = TimeZone.getTimeZone("GMT")
+
+            return sdf.format(Date(diff))
+        }
+
+        fun getTimeInIso(time: Timestamp): String{
+            return SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:S'Z'").format(Date(time.time))
+        }
+
+        fun getCriteria(): Criteria{
             val criteria = Criteria()
             criteria.accuracy = Criteria.ACCURACY_FINE
             criteria.powerRequirement = Criteria.POWER_HIGH

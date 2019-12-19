@@ -15,7 +15,7 @@ class DbHelper(context: Context) : SQLiteOpenHelper(
 ) {
     companion object {
         const val DATABASE_NAME = "appdb.db"
-        const val DATABASE_VERSION = 10
+        const val DATABASE_VERSION = 11
 
         //Session
         const val SESSION_TABLE_NAME = "SESSION"

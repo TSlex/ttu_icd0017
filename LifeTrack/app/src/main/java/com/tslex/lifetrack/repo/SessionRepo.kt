@@ -7,6 +7,7 @@ import android.util.Log
 import com.tslex.lifetrack.DbHelper
 import com.tslex.lifetrack.domain.Session
 import java.sql.Time
+import java.sql.Timestamp
 
 class SessionRepo(val context: Context) {
     private var TAG = this::class.java.canonicalName
@@ -40,7 +41,7 @@ class SessionRepo(val context: Context) {
                             cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_ID)),
                             cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LAT)),
                             cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LNG)),
-                            Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_CREATING_TIME))),
+                            Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_CREATING_TIME))),
                             cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_SET)) == 1
                         )
                     )
@@ -64,7 +65,7 @@ class SessionRepo(val context: Context) {
                     cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_ID)),
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LAT)),
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LNG)),
-                    Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_CREATING_TIME))),
+                    Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_CREATING_TIME))),
                     cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_SET)) == 1
                 )
             }
@@ -96,7 +97,7 @@ class SessionRepo(val context: Context) {
                     cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_ID)),
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LAT)),
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LNG)),
-                    Time.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_CREATING_TIME))),
+                    Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_CREATING_TIME))),
                     cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_SET)) == 1
                 )
             }

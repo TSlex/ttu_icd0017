@@ -9,6 +9,7 @@ import android.location.*
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.util.TimeUtils
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.tslex.lifetrack.domain.PType
 import com.tslex.lifetrack.domain.Point
@@ -18,6 +19,8 @@ import com.tslex.lifetrack.repo.PointRepo
 import com.tslex.lifetrack.repo.SessionRepo
 import java.lang.Exception
 import java.sql.Time
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -95,7 +98,65 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         pTypes.close()
 
         startListener()
+        return START_STICKY
+    }
 
+    private fun startListener() {
+        try {
+            locationManager.requestLocationUpdates(2000, 0.1f, criteria, this, null)
+        } catch (e: SecurityException) {
+            Log.e("MAIN", e.toString())
+        }
+
+        startMetaUpdating()
+    }
+
+    private fun stopListener() {
+        locationManager.removeUpdates(this)
+
+        stopMetaUpdating()
+    }
+
+    private fun addCp(){
+        if (lastLocation == null) return
+
+        val tmp = lastLocation!!
+
+        val points = PointRepo(this).open()
+        lastCp = Point(currentSession.id, 1, tmp.latitude, tmp.longitude)
+        points.add(lastCp!!)
+
+        val intent = Intent(Intents.INTENT_UI_PLACE_CP.getAction())
+        intent.putExtra("lat", tmp.latitude)
+        intent.putExtra("lng", tmp.longitude)
+
+        LocalBroadcastManager.getInstance(applicationContext)
+            .sendBroadcast(intent)
+    }
+
+//    private fun addWp(latitude: Double, longitude: Double){
+    private fun addWp(){
+
+        if (lastLocation == null) return
+
+        val tmp = lastLocation!!
+
+        val sessions = SessionRepo(this).open()
+        currentSession.isWayPointSet = true
+        currentSession.wLat = tmp.latitude
+        currentSession.wLng = tmp.longitude
+        sessions.update(currentSession)
+        sessions.close()
+
+        val intent = Intent(Intents.INTENT_UI_PLACE_WP.getAction())
+        intent.putExtra("lat", tmp.latitude)
+        intent.putExtra("lng", tmp.longitude)
+
+        LocalBroadcastManager.getInstance(applicationContext)
+            .sendBroadcast(intent)
+    }
+
+    private fun startMetaUpdating(){
         thread = Executors.newScheduledThreadPool(1)
         thread.scheduleAtFixedRate({
 
@@ -136,66 +197,16 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 //            meta.putExtra("paceCp", )
 //            meta.putExtra("paceWp", )
 
-            meta.putExtra("totalTime", Time(Date().time - currentSession.creatingTime.time).toString())
+            meta.putExtra("totalTime", GPSTools.getTimeBetween(Timestamp(Date().time), currentSession.creatingTime))
 
 
             LocalBroadcastManager.getInstance(applicationContext)
                 .sendBroadcast(meta)
 
         }, 0, 1, TimeUnit.SECONDS)
-
-        return START_STICKY
     }
-
-    private fun startListener() {
-        try {
-            locationManager.requestLocationUpdates(2000, 0.1f, criteria, this, null)
-        } catch (e: SecurityException) {
-            Log.e("MAIN", e.toString())
-        }
-    }
-
-    private fun stopListener() {
-        locationManager.removeUpdates(this)
-    }
-
-    private fun addCp(){
-        if (lastLocation == null) return
-
-        val tmp = lastLocation!!
-
-        val points = PointRepo(this).open()
-        lastCp = Point(currentSession.id, 1, tmp.latitude, tmp.longitude)
-        points.add(lastCp!!)
-
-        val intent = Intent(Intents.INTENT_UI_PLACE_CP.getAction())
-        intent.putExtra("lat", tmp.latitude)
-        intent.putExtra("lng", tmp.longitude)
-
-        LocalBroadcastManager.getInstance(applicationContext)
-            .sendBroadcast(intent)
-    }
-
-//    private fun addWp(latitude: Double, longitude: Double){
-    private fun addWp(){
-
-        if (lastLocation == null) return
-
-        val tmp = lastLocation!!
-
-        val sessions = SessionRepo(this).open()
-        currentSession.isWayPointSet = true
-        currentSession.wLat = tmp.latitude
-        currentSession.wLng = tmp.longitude
-        sessions.update(currentSession)
-        sessions.close()
-
-        val intent = Intent(Intents.INTENT_UI_PLACE_WP.getAction())
-        intent.putExtra("lat", tmp.latitude)
-        intent.putExtra("lng", tmp.longitude)
-
-        LocalBroadcastManager.getInstance(applicationContext)
-            .sendBroadcast(intent)
+    private fun stopMetaUpdating(){
+        thread.shutdown()
     }
 
     override fun onLocationChanged(location: Location?) {
@@ -243,11 +254,6 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
                 }
                 Intents.INTENT_TRACKING_STOP.getAction() -> {
                     stopListener()
-                    try {
-                        thread.shutdown()
-                    }catch (ex: Exception){
-
-                    }
                 }
                 Intents.INTENT_ADD_WP.getAction() -> {
 //                    val latitude = intent.getDoubleExtra("lat", .0)

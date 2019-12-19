@@ -1,6 +1,7 @@
 package com.tslex.lifetrack.domain
 
 import java.sql.Time
+import java.sql.Timestamp
 import java.util.*
 
 class Session {
@@ -8,10 +9,10 @@ class Session {
     var id: Int = 0
     var wLat: Double
     var wLng: Double
-    var creatingTime: Date
+    var creatingTime: Timestamp
     var isWayPointSet: Boolean
 
-    constructor(id: Int, wLat: Double, wLng: Double, creatingTime: Date, isWayPointSet: Boolean) {
+    constructor(id: Int, wLat: Double, wLng: Double, creatingTime: Timestamp, isWayPointSet: Boolean) {
         this.id = id
         this.wLat = wLat
         this.wLng = wLng
@@ -22,7 +23,7 @@ class Session {
     constructor() {
         this.wLat = .0
         this.wLng = .0
-        this.creatingTime = Time(Date().time)
+        this.creatingTime = Timestamp(Date().time)
         this.isWayPointSet = false
     }
 }
