@@ -6,6 +6,10 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
@@ -25,12 +29,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 
 
-class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
+class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEventListener {
 
     private lateinit var myMap: GoogleMap
     private lateinit var locationManager: LocationManager
@@ -38,6 +40,9 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private lateinit var criteria: Criteria
     private lateinit var preferences: SharedPreferences
     private lateinit var thread: ScheduledExecutorService
+
+    lateinit var sensorManager: SensorManager
+    lateinit var accSensor: Sensor
 
     private val broadcastReceiver = UIBroadcastReceiver()
     private val TAG = this::class.java.simpleName
@@ -80,6 +85,12 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
             ), PackageManager.PERMISSION_GRANTED
         )
 
+        //Sensors
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION)
+
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -101,33 +112,50 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         locationProvider = locationManager.getBestProvider(criteria, false)!!
         Log.d("MAIN", locationProvider)
 
-        thread = Executors.newScheduledThreadPool(1)
-        thread.scheduleAtFixedRate({
-            LocalBroadcastManager.getInstance(applicationContext)
-                .sendBroadcast(Intent(Intents.INTENT_COMPASS_UPDATE.getAction()))
-        }, 0, 100, TimeUnit.MILLISECONDS)
+//        thread = Executors.newScheduledThreadPool(1)
+//        thread.scheduleAtFixedRate({
+//            LocalBroadcastManager.getInstance(applicationContext)
+//                .sendBroadcast(Intent(Intents.INTENT_COMPASS_UPDATE.getAction()))
+//        }, 0, 100, TimeUnit.MILLISECONDS)
 
         applySettings()
     }
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
-        thread.shutdown()
+//        thread.shutdown()
         super.onDestroy()
     }
 
     override fun onResume() {
         Log.d(TAG, "onResume")
         applySettings()
+
         if (isMapReady) {
             updateMap()
         }
+
+        sensorManager.registerListener(this, accSensor, SensorManager.SENSOR_DELAY_FASTEST)
+
         super.onResume()
     }
 
     override fun onPause() {
         Log.d(TAG, "onPause")
+
+        sensorManager.unregisterListener(this)
+
         super.onPause()
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        val values = event!!.values
+        val degree = values[0]
+
+        compass.rotation = degree * -1
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
     }
 
     fun onZoomButtonClicked(view: View) {
@@ -249,13 +277,13 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
             val confirm = AlertDialog.Builder(this)
             confirm.setTitle("Stop listener?")
                 .setMessage("All session data will be saved")
-                .setPositiveButton("Stop") { _, _ -> stopServise() }
+                .setPositiveButton("Stop") { _, _ -> stopService() }
                 .setNegativeButton("Cancel"){_, _ -> {}}
             confirm.create().show()
         }
     }
 
-    private fun stopServise(){
+    private fun stopService(){
         LocalBroadcastManager.getInstance(applicationContext)
             .sendBroadcast(Intent(Intents.INTENT_TRACKING_STOP.getAction()))
 
@@ -288,7 +316,7 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         setControlsButtonsEnabled(true)
     }
 
-    fun updateMap() {
+    private fun updateMap() {
         myMap.isMyLocationEnabled = false
         myMap.uiSettings.isCompassEnabled = false
 //        mMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
@@ -310,14 +338,14 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         }
     }
 
-    fun setControlsButtonsEnabled(bool: Boolean) {
+    private fun setControlsButtonsEnabled(bool: Boolean) {
         buttonStart.isEnabled = bool
         buttonPause.isEnabled = bool
         buttonResume.isEnabled = bool
         buttonStop.isEnabled = bool
     }
 
-    fun setPointsButtonsEnabled(bool: Boolean) {
+    private fun setPointsButtonsEnabled(bool: Boolean) {
         buttonWp.isEnabled = bool
         buttonCp.isEnabled = bool
     }
@@ -373,11 +401,11 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         myMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
     }
 
-    fun applySettings() {
+    private fun applySettings() {
         compass.isVisible = preferences.getBoolean(getString(R.string.pref_compass), true)
     }
 
-    fun resizeBitmap(drawableName: String?, width: Int, height: Int): Bitmap? {
+    private fun resizeBitmap(drawableName: String?, width: Int, height: Int): Bitmap? {
         val imageBitmap = BitmapFactory.decodeResource(
             resources,
             resources.getIdentifier(drawableName, "drawable", packageName)
@@ -434,7 +462,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
                     placeCp(latitude, longitude)
                 }
                 Intents.INTENT_COMPASS_UPDATE.getAction() -> {
-                    compass.rotation = -1 * myMap.cameraPosition.bearing
+//                    compass.rotation = -1 * myMap.cameraPosition.bearing
+//                    updateCompass()
                 }
                 else -> return
             }
