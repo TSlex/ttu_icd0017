@@ -2,6 +2,8 @@ package com.tslex.lifetrack
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -14,7 +16,9 @@ import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
@@ -29,6 +33,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.tslex.lifetrack.domain.Point
+import com.tslex.lifetrack.domain.Session
 import com.tslex.lifetrack.repo.PointRepo
 import com.tslex.lifetrack.repo.SessionRepo
 import kotlinx.android.synthetic.main.activity_main.*
@@ -60,6 +65,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     private var polyline: Polyline? = null
 
     private var isRequestingZoom = false
+    private var isRequestingRestore = false
+    private var isNotEmpty = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
@@ -72,9 +79,6 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         //hide
         buttonPause.visibility = View.GONE
         buttonResume.visibility = View.GONE
-        buttonCommit.visibility = View.GONE
-        buttonCancel.visibility = View.GONE
-        aim.visibility = View.GONE
 
         //lock buttons
         setControlsButtonsEnabled(false)
@@ -92,8 +96,6 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         //Sensors
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION)
-
-
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -174,27 +176,11 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     }
 
     fun onCpButtonClicked(view: View) {
-//        state = UIState.ADDING_CHECKPOINT
-//
-//        buttonCp.visibility = View.GONE
-//        buttonWp.visibility = View.GONE
-//        buttonCommit.visibility = View.VISIBLE
-//        buttonCancel.visibility = View.VISIBLE
-//        aim.visibility = View.VISIBLE
-
         LocalBroadcastManager.getInstance(applicationContext)
             .sendBroadcast(Intent(Intents.INTENT_ADD_CP.getAction()))
     }
 
     fun onWpButtonClicked(view: View) {
-//        state = UIState.ADDING_WAYPOINT
-//
-//        buttonCp.visibility = View.GONE
-//        buttonWp.visibility = View.GONE
-//        buttonCommit.visibility = View.VISIBLE
-//        buttonCancel.visibility = View.VISIBLE
-//        aim.visibility = View.VISIBLE
-
         LocalBroadcastManager.getInstance(applicationContext)
             .sendBroadcast(Intent(Intents.INTENT_ADD_WP.getAction()))
     }
@@ -203,6 +189,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         val service = Intent(this, GPSService::class.java)
         startService(service)
 
+        isNotEmpty = false
+
         myMap.clear()
         buttonStart.visibility = View.GONE
         buttonPause.visibility = View.VISIBLE
@@ -210,6 +198,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         setPointsButtonsEnabled(true)
 
         addEmptyPolyline()
+
+        isNotEmpty = true
     }
 
     private fun addEmptyPolyline(){
@@ -271,6 +261,20 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         startActivityForResult(sessions, 999)
     }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        isNotEmpty = savedInstanceState.getBoolean("notEmpty")
+        isRequestingRestore = true
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        outState.putBoolean("notEmpty", isNotEmpty)
+
+        LocalBroadcastManager.getInstance(applicationContext)
+            .unregisterReceiver(broadcastReceiver)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d("ActivityResult", resultCode.toString())
         when (resultCode){
@@ -278,62 +282,78 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
                 stopService()
                 myMap.clear()
 
-//                Log.d("ActivityResult", "try to get id")
-
                 val sessionId = data?.getIntExtra("sessionId", 0) ?: 0
                 if (sessionId == 0) return
 
-//                Log.d("ActivityResult", "got id")
+                restoreMap(sessionId)
+            }
+        }
+    }
 
-                val sessions = SessionRepo(this).open()
-                val session = sessions.getById(sessionId)
-                sessions.close()
+    private fun restoreMap(sessionId: Int){
 
-                if (session == null) return
+        val sessions = SessionRepo(this).open()
+        var session: Session?
+
+        if (sessionId == 0) {
+            session = sessions.getLast()
+            sessions.close()
+        }
+        else{
+            session = sessions.getById(sessionId)
+            sessions.close()
+        }
+
+        if (session == null) return
 
 //                Log.d("ActivityResult", "got session")
 
-                val points = PointRepo(this).open()
-                val pointList = points.getAll(session.id)
-                points.close()
+        val points = PointRepo(this).open()
+        val pointList = points.getAll(session.id)
+        points.close()
 
-                val rPoints = pointList.filter {point -> point.typeId != 1}
-                val cPoints = pointList.filter {point -> point.typeId == 1}
+        val rPoints = pointList.filter {point -> point.typeId != 1}
+        val cPoints = pointList.filter {point -> point.typeId == 1}
 
 //                Log.d("ActivityResult", "got points")
 
-                addEmptyPolyline()
+        addEmptyPolyline()
 
-                val tmp = polyline!!.points
+        val tmp = polyline!!.points
 
-                for (point in rPoints){
-                    tmp.add(LatLng(point.pLat, point.pLng))
-                }
+        for (point in rPoints){
+            tmp.add(LatLng(point.pLat, point.pLng))
+        }
 
-                val last = rPoints.last()
+        val last = rPoints.last()
 
-                polyline!!.points = tmp
+        polyline!!.points = tmp
 
 //                Log.d("ActivityResult", "add polyline")
 
-                for (point in cPoints){
-                    lastCp = myMap.addMarker(
-                        MarkerOptions()
-                            .position(LatLng(point.pLat, point.pLng))
-                            .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("cp_marker", 150, 150)))
-                    )
-                }
+        for (point in cPoints){
+            lastCp = myMap.addMarker(
+                MarkerOptions()
+                    .position(LatLng(point.pLat, point.pLng))
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("cp_marker", 150, 150)))
+            )
+        }
 
-                if (session.isWayPointSet){
-                    lastWp = myMap.addMarker(
-                        MarkerOptions()
-                            .position(LatLng(session.wLat, session.wLng))
-                            .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("wp_marker", 150, 150)))
-                    )
-                }
+        if (session.isWayPointSet){
+            lastWp = myMap.addMarker(
+                MarkerOptions()
+                    .position(LatLng(session.wLat, session.wLng))
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("wp_marker", 150, 150)))
+            )
+        }
 
-                myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(last.pLat, last.pLng), 16f))
-            }
+        if (sessionId != 0) {
+            myMap.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(last.pLat, last.pLng),
+                    16f
+                )
+            )
         }
     }
 
@@ -346,6 +366,11 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
         //now we can unlock buttons
         setControlsButtonsEnabled(true)
+
+        if (isRequestingRestore && isNotEmpty){
+            restoreMap(0)
+            isRequestingRestore = false
+        }
     }
 
     private fun updateMap() {

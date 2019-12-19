@@ -1,11 +1,14 @@
 package com.tslex.lifetrack
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.*
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
@@ -43,8 +46,6 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
     private var firstLocation: Location? = null
 
     private var lastCp: Point? = null
-//    private var lastCpRPoint: Point? = null
-//    private var lastWpRPoint: Point? = null
 
     private lateinit var pointTypes: ArrayList<PType>
 
@@ -63,20 +64,11 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
         //setup location manager and provider
         setUpLocations()
+
+        createNotificationChannel()
     }
 
-
     private fun setUpLocations() {
-//        criteria = Criteria()
-//        criteria.accuracy = Criteria.ACCURACY_FINE
-//        criteria.powerRequirement = Criteria.POWER_HIGH
-//        criteria.isAltitudeRequired = false
-//        criteria.isSpeedRequired = true
-//        criteria.isCostAllowed = false
-//        criteria.isBearingRequired = true
-//        criteria.horizontalAccuracy = Criteria.ACCURACY_HIGH
-//        criteria.verticalAccuracy = Criteria.ACCURACY_HIGH
-
         criteria = GPSTools.getCriteria()
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationProvider = locationManager.getBestProvider(criteria, true)!!
@@ -100,6 +92,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         pTypes.close()
 
         startListener()
+
         return START_STICKY
     }
 
@@ -211,6 +204,21 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         return sum
     }
 
+    private fun createNotificationChannel() {
+        // when on 8 Oreo or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "com.tslex.lifetrack.notify",
+                "Controller",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            channel.description = "Notification with session data and controls"
+
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
     private fun startMetaUpdating(){
         thread = Executors.newScheduledThreadPool(1)
         thread.scheduleAtFixedRate({
@@ -267,6 +275,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
         }, 0, 1, TimeUnit.SECONDS)
     }
+
     private fun stopMetaUpdating(){
         thread.shutdown()
     }

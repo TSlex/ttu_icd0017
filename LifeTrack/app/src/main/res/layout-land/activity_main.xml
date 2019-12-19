@@ -16,105 +16,89 @@
 
     <LinearLayout
         android:id="@+id/topBar"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal">
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/buttonSessions"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:onClick="onSessionsButtonClicked"
-            android:text="open sessions"
+            android:text="sess"
             android:visibility="visible" />
 
         <Button
             android:id="@+id/buttonMenu"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:onClick="onMenuButtonClicked"
-            android:text="settings" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/bottomBar"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/buttonStart"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="onStartButtonClicked"
-            android:text="Start" />
-
-        <Button
-            android:id="@+id/buttonPause"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="onPauseButtonClicked"
-            android:text="Pause"
-            tools:visibility="gone" />
+            android:text="sett" />
 
         <Button
             android:id="@+id/buttonResume"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:onClick="onResumeButtonClicked"
             android:text="Resume"
             tools:visibility="gone" />
 
         <Button
+            android:id="@+id/buttonStart"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:onClick="onStartButtonClicked"
+            android:text="Start" />
+
+        <Button
             android:id="@+id/buttonStop"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:onClick="onStopButtonClicked"
             android:text="Stop" />
+
+        <Button
+            android:id="@+id/buttonPause"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:onClick="onPauseButtonClicked"
+            android:text="Pause"
+            tools:visibility="gone" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/compass"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="70dp"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/compass_v2"/>
-
-
-    <ImageButton
-        android:id="@+id/buttonZoom"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="70dp"
-        android:background="@null"
-        android:onClick="onZoomButtonClicked"
-        android:scaleType="fitCenter"
-        android:src="@drawable/zoom"
-        tools:visibility="visible" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="70dp"
+        android:layout_centerVertical="true"
         android:layout_marginRight="10dp">
 
+        <ImageView
+            android:id="@+id/compass"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/compass_v2" />
+
         <ImageButton
-            android:id="@+id/buttonWp"
+            android:id="@+id/buttonZoom"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@null"
+            android:onClick="onZoomButtonClicked"
+            android:scaleType="fitCenter"
+            android:src="@drawable/zoom"
+            tools:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/notBWp"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@null"
@@ -139,9 +123,8 @@
         android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="70dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="100dp"
         android:orientation="vertical">
 
         <TextView
