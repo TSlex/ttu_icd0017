@@ -2,6 +2,7 @@ package com.tslex.lifetrack
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -13,6 +14,9 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.util.TimeUtils
+import android.widget.RemoteViews
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.tslex.lifetrack.domain.PType
 import com.tslex.lifetrack.domain.Point
@@ -62,10 +66,19 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         LocalBroadcastManager.getInstance(applicationContext)
             .registerReceiver(broadcastReceiver, intentFilter)
 
+        registerReceiver(broadcastReceiver, intentFilter)
+
         //setup location manager and provider
         setUpLocations()
 
         createNotificationChannel()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        stopListener()
+        NotificationManagerCompat.from(this).cancel(0)
     }
 
     private fun setUpLocations() {
@@ -273,11 +286,83 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
             LocalBroadcastManager.getInstance(applicationContext)
                 .sendBroadcast(meta)
 
+            updateNotification()
+
         }, 0, 1, TimeUnit.SECONDS)
     }
 
     private fun stopMetaUpdating(){
-        thread.shutdown()
+        try {
+            thread.shutdown()
+        }catch (ignored: Exception){}
+
+        NotificationManagerCompat.from(this).cancel(0)
+    }
+
+    private fun updateNotification(){
+        val notifyView = RemoteViews(packageName, R.layout.notification_ui)
+
+        val intentCp = Intent(Intents.INTENT_ADD_CP.getAction())
+        val intentWp = Intent(Intents.INTENT_ADD_WP.getAction())
+        val intent = Intent(this, UI::class.java)
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+        val pendingIntentCp = PendingIntent.getBroadcast(this, 0, intentCp, 0)
+        val pendingIntentWp = PendingIntent.getBroadcast(this, 0, intentWp, 0)
+
+        notifyView.setOnClickPendingIntent(R.id.notBCp, pendingIntentCp)
+        notifyView.setOnClickPendingIntent(R.id.notBWp, pendingIntentWp)
+
+        val totalTime = GPSTools.getTimeBetween(Timestamp(Date().time), currentSession.creatingTime)
+
+        notifyView.setTextViewText(R.id.notTT, GPSTools.formatRawTime(totalTime))
+
+        if (firstLocation != null && lastLocation != null){
+            notifyView.setTextViewText(R.id.notSD, "${GPSTools.getDirectDistance(
+                firstLocation!!.latitude,
+                firstLocation!!.longitude,
+                lastLocation!!.latitude,
+                lastLocation!!.longitude)}m")
+
+            val calDist = calculateDistance(firstLocation!!.latitude, firstLocation!!.longitude)
+            notifyView.setTextViewText(R.id.notSC, "${calDist}m")
+            notifyView.setTextViewText(R.id.notSP, GPSTools.getPace(totalTime, calDist))
+        }
+
+        if (lastCp != null && lastLocation != null){
+            notifyView.setTextViewText(R.id.notCD, "${GPSTools.getDirectDistance(
+                lastCp!!.pLat,
+                lastCp!!.pLng,
+                lastLocation!!.latitude,
+                lastLocation!!.longitude)}m")
+
+            val calDist = calculateDistance(lastCp!!.pLat, lastCp!!.pLng)
+            notifyView.setTextViewText(R.id.notCC, "${calDist}m")
+            notifyView.setTextViewText(R.id.notCP, GPSTools.getPace(totalTime, calDist))
+        }
+
+        if (currentSession.isWayPointSet && lastLocation != null){
+            notifyView.setTextViewText(R.id.notWD, "${GPSTools.getDirectDistance(
+                currentSession.wLat,
+                currentSession.wLng,
+                lastLocation!!.latitude,
+                lastLocation!!.longitude)}m")
+
+            val calDist = calculateDistance(currentSession.wLat, currentSession.wLng)
+            notifyView.setTextViewText(R.id.notWC, "${calDist}m")
+            notifyView.setTextViewText(R.id.notWP, GPSTools.getPace(totalTime, calDist))
+        }
+
+        var builder = NotificationCompat.Builder(this, "com.tslex.lifetrack.notify")
+            .setSmallIcon(R.drawable.marker)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setOngoing(true)
+            .setContentIntent(pendingIntent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+
+        builder.setContent(notifyView)
+
+        NotificationManagerCompat.from(this).notify(0, builder.build())
     }
 
     override fun onLocationChanged(location: Location?) {

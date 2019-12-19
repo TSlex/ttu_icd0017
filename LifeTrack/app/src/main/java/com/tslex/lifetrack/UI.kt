@@ -25,6 +25,7 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.isVisible
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -129,8 +130,9 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
-//        thread.shutdown()
         super.onDestroy()
+
+        stopService()
     }
 
     override fun onResume() {

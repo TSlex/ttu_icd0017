@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="64dp"
+    xmlns:tools="http://schemas.android.com/tools"
     android:maxHeight="64dp"
     android:minHeight="64dp">
 
@@ -97,6 +98,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:text="Direct distances"
                 android:textSize="10sp" />
 
@@ -140,6 +142,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:text="Calc distances"
                 android:textSize="10sp" />
 
@@ -176,7 +179,6 @@
 
         <ImageButton
             android:id="@+id/notBWp"
-            tools:visibility="visible"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
