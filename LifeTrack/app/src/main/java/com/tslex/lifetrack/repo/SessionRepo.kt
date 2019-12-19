@@ -9,7 +9,7 @@ import com.tslex.lifetrack.domain.Session
 import java.sql.Time
 import java.sql.Timestamp
 
-class SessionRepo(val context: Context) {
+class SessionRepo (val context: Context) {
     private var TAG = this::class.java.canonicalName
     private lateinit var dbHelper: DbHelper
     private lateinit var db: SQLiteDatabase
@@ -115,6 +115,13 @@ class SessionRepo(val context: Context) {
 
         db.update(DbHelper.SESSION_TABLE_NAME, contentValue, "" +
                 "${DbHelper.SESSION_ID} = ${session.id}", null)
+        db.setTransactionSuccessful()
+        db.endTransaction()
+    }
+
+    fun delete(id: Int){
+        db.beginTransaction()
+        db.execSQL("DELETE FROM ${DbHelper.SESSION_TABLE_NAME} WHERE ${DbHelper.SESSION_ID} = $id")
         db.setTransactionSuccessful()
         db.endTransaction()
     }

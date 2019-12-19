@@ -28,8 +28,12 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.tslex.lifetrack.domain.Point
+import com.tslex.lifetrack.repo.PointRepo
+import com.tslex.lifetrack.repo.SessionRepo
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.ScheduledExecutorService
+import java.util.stream.Collectors
 
 
 class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEventListener {
@@ -169,47 +173,6 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         }
     }
 
-//    fun onCommitButtonClicked(view: View) {
-//
-//        when (state) {
-//            UIState.ADDING_WAYPOINT -> {
-////                LocalBroadcastManager.getInstance(applicationContext)
-////                    .sendBroadcast(Intent(Intents.INTENT_ADD_WP.getAction()))
-//
-//                val intent = Intent(Intents.INTENT_ADD_WP.getAction())
-//                val tmp = myMap.cameraPosition
-//                intent.putExtra("lat", tmp.target.latitude)
-//                intent.putExtra("lng", tmp.target.longitude)
-//                placeWp(tmp.target.latitude, tmp.target.longitude)
-//
-//                LocalBroadcastManager.getInstance(applicationContext)
-//                    .sendBroadcast(intent)
-//            }
-//            UIState.ADDING_CHECKPOINT -> {
-//                LocalBroadcastManager.getInstance(applicationContext)
-//                    .sendBroadcast(Intent(Intents.INTENT_ADD_CP.getAction()))
-//            }
-//        }
-//
-//        state = UIState.NONE
-//
-//        buttonCp.visibility = View.VISIBLE
-//        buttonWp.visibility = View.VISIBLE
-//        buttonCommit.visibility = View.GONE
-//        buttonCancel.visibility = View.GONE
-//        aim.visibility = View.GONE
-//    }
-//
-//    fun onCancelButtonClicked(view: View) {
-//        state = UIState.NONE
-//
-//        buttonCp.visibility = View.VISIBLE
-//        buttonWp.visibility = View.VISIBLE
-//        buttonCommit.visibility = View.GONE
-//        buttonCancel.visibility = View.GONE
-//        aim.visibility = View.GONE
-//    }
-
     fun onCpButtonClicked(view: View) {
 //        state = UIState.ADDING_CHECKPOINT
 //
@@ -246,6 +209,10 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
         setPointsButtonsEnabled(true)
 
+        addEmptyPolyline()
+    }
+
+    private fun addEmptyPolyline(){
         polyline = myMap.addPolyline(
             PolylineOptions()
                 .startCap(RoundCap())
@@ -299,10 +266,75 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         startActivity(intent)
     }
 
-    fun onTestButtonClicked(view: View) {
-        Log.d(TAG, "${preferences.getBoolean("north_face", true)}")
-        Log.d(TAG, "${preferences.getBoolean("center_map", true)}")
-        Log.d(TAG, "${preferences.getBoolean("compass", true)}")
+    fun onSessionsButtonClicked(view: View) {
+        val sessions = Intent(this, SessionListUi::class.java)
+        startActivityForResult(sessions, 999)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d("ActivityResult", resultCode.toString())
+        when (resultCode){
+            13 -> {
+                stopService()
+                myMap.clear()
+
+//                Log.d("ActivityResult", "try to get id")
+
+                val sessionId = data?.getIntExtra("sessionId", 0) ?: 0
+                if (sessionId == 0) return
+
+//                Log.d("ActivityResult", "got id")
+
+                val sessions = SessionRepo(this).open()
+                val session = sessions.getById(sessionId)
+                sessions.close()
+
+                if (session == null) return
+
+//                Log.d("ActivityResult", "got session")
+
+                val points = PointRepo(this).open()
+                val pointList = points.getAll(session.id)
+                points.close()
+
+                val rPoints = pointList.filter {point -> point.typeId != 1}
+                val cPoints = pointList.filter {point -> point.typeId == 1}
+
+//                Log.d("ActivityResult", "got points")
+
+                addEmptyPolyline()
+
+                val tmp = polyline!!.points
+
+                for (point in rPoints){
+                    tmp.add(LatLng(point.pLat, point.pLng))
+                }
+
+                val last = rPoints.last()
+
+                polyline!!.points = tmp
+
+//                Log.d("ActivityResult", "add polyline")
+
+                for (point in cPoints){
+                    lastCp = myMap.addMarker(
+                        MarkerOptions()
+                            .position(LatLng(point.pLat, point.pLng))
+                            .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("cp_marker", 150, 150)))
+                    )
+                }
+
+                if (session.isWayPointSet){
+                    lastWp = myMap.addMarker(
+                        MarkerOptions()
+                            .position(LatLng(session.wLat, session.wLng))
+                            .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("wp_marker", 150, 150)))
+                    )
+                }
+
+                myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(last.pLat, last.pLng), 16f))
+            }
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

@@ -9,11 +9,13 @@ enum class Intents(private val action: String) {
     INTENT_ADD_CP           ("lifetrack.service.add.cp"),
     INTENT_ADD_WP           ("lifetrack.service.add.wp"),
 
-    INTENT_UI_PLACE_CP      ("lifetrack.service.tracking.ui.place.cp"),
-    INTENT_UI_PLACE_WP      ("lifetrack.service.tracking.ui.place.wp"),
+    INTENT_UI_PLACE_CP      ("lifetrack.ui.place.cp"),
+    INTENT_UI_PLACE_WP      ("lifetrack.ui.place.wp"),
 
-    INTENT_UI_UPDATE_LOCATION        ("lifetrack.service.tracking.ui.update.location"),
-    INTENT_UI_UPDATE_META        ("lifetrack.service.tracking.ui.update.meta"),
+    INTENT_UI_UPDATE_LOCATION        ("lifetrack.ui.update.location"),
+    INTENT_UI_UPDATE_META        ("lifetrack.ui.update.meta"),
+
+    INTENT_LOAD_SESSION      ("lifetrack.ui.load.session"),
 
     INTENT_COMPASS_UPDATE   ("lifetrack.service.tracking.compass.update"),
     ;
