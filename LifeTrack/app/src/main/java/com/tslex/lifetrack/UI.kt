@@ -403,6 +403,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
                 }
                 Intents.INTENT_UI_UPDATE_META.getAction() -> {
 
+                    totalTime.text = intent.getStringExtra("totalTime")
+
                     dirDirStart.text = "${intent.getIntExtra("dirDirStart", 0)}m"
                     dirDirCp.text = "${intent.getIntExtra("dirDirCp", 0)}m"
                     dirDirWp.text = "${intent.getIntExtra("dirDirWp", 0)}m"
@@ -411,11 +413,15 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener {
                     calDirCp.text = "${intent.getIntExtra("calDirCp", 0)}m"
                     calDirWp.text = "${intent.getIntExtra("calDirWp", 0)}m"
 
-//                    paceStart.text = intent.getStringExtra("paceStart")
-//                    paceCp.text = intent.getStringExtra("paceCp")
-//                    paceWp.text = intent.getStringExtra("paceWp")
+                    paceStart.text = intent.getStringExtra("paceStart")
+                    if (paceStart.text == "") paceStart.text = "00:00:00"
 
-                    totalTime.text = intent.getStringExtra("totalTime")
+                    paceCp.text = intent.getStringExtra("paceCp")
+                    if (paceCp.text == "") paceCp.text = "00:00:00"
+
+                    paceWp.text = intent.getStringExtra("paceWp")
+                    if (paceWp.text == "") paceWp.text = "00:00:00"
+
                 }
                 Intents.INTENT_UI_PLACE_WP.getAction() -> {
                     val latitude = intent.getDoubleExtra("lat", .0)

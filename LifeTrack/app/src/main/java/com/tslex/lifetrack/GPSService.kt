@@ -41,8 +41,10 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
     private var lastLocation: Location? = null
     private var firstLocation: Location? = null
+
     private var lastCp: Point? = null
-//    private var lastWp: Point? = null
+//    private var lastCpRPoint: Point? = null
+//    private var lastWpRPoint: Point? = null
 
     private lateinit var pointTypes: ArrayList<PType>
 
@@ -126,6 +128,8 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         lastCp = Point(currentSession.id, 1, tmp.latitude, tmp.longitude)
         points.add(lastCp!!)
 
+        addRp(tmp)
+
         val intent = Intent(Intents.INTENT_UI_PLACE_CP.getAction())
         intent.putExtra("lat", tmp.latitude)
         intent.putExtra("lng", tmp.longitude)
@@ -134,7 +138,6 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
             .sendBroadcast(intent)
     }
 
-//    private fun addWp(latitude: Double, longitude: Double){
     private fun addWp(){
 
         if (lastLocation == null) return
@@ -148,6 +151,8 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         sessions.update(currentSession)
         sessions.close()
 
+        addRp(tmp)
+
         val intent = Intent(Intents.INTENT_UI_PLACE_WP.getAction())
         intent.putExtra("lat", tmp.latitude)
         intent.putExtra("lng", tmp.longitude)
@@ -156,11 +161,64 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
             .sendBroadcast(intent)
     }
 
+    private fun addRp(location: Location): Point{
+        val intent = Intent(Intents.INTENT_UI_UPDATE_LOCATION.getAction())
+        intent.putExtra("lat", location.latitude)
+        intent.putExtra("lng", location.longitude)
+
+        LocalBroadcastManager.getInstance(applicationContext)
+            .sendBroadcast(intent)
+
+        val points = PointRepo(this).open()
+        val point = Point(currentSession.id, 2, location!!.latitude, location!!.longitude)
+        points.add(point)
+
+        if (firstLocation == null) firstLocation = location
+        lastLocation = location
+
+        return point
+    }
+
+    private fun calculateDistance(lat: Double, lng: Double): Int{
+        if (lastLocation == null) return 0
+
+        val points = PointRepo(this).open()
+        val pointList = points.getAll(currentSession.id)
+        pointList.reverse()
+        points.close()
+
+        var sum = 0
+        var lastPoint: Point? = null
+
+        for (p in pointList){
+            if (p.pLat == lat && p.pLng == lng){
+                if (lastPoint != null){
+                    sum += GPSTools.getDirectDistance(lastPoint.pLat, lastPoint.pLng, p.pLat, p.pLng)
+                }
+                break
+            }
+            if (lastPoint == null){
+//                sum += GPSTools.getDirectDistance(lastLocation!!.latitude, lastLocation!!.longitude, p.pLat, p.pLng)
+                lastPoint = p
+                continue
+            }
+            else{
+                sum += GPSTools.getDirectDistance(lastPoint.pLat, lastPoint.pLng, p.pLat, p.pLng)
+                lastPoint = p
+            }
+        }
+
+        return sum
+    }
+
     private fun startMetaUpdating(){
         thread = Executors.newScheduledThreadPool(1)
         thread.scheduleAtFixedRate({
 
             val meta = Intent(Intents.INTENT_UI_UPDATE_META.getAction())
+            val totalTime = GPSTools.getTimeBetween(Timestamp(Date().time), currentSession.creatingTime)
+
+            meta.putExtra("totalTime", GPSTools.formatRawTime(totalTime))
 
             if (firstLocation != null && lastLocation != null){
                 meta.putExtra("dirDirStart",
@@ -169,6 +227,10 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
                         firstLocation!!.longitude,
                         lastLocation!!.latitude,
                         lastLocation!!.longitude))
+
+                val calDist = calculateDistance(firstLocation!!.latitude, firstLocation!!.longitude)
+                meta.putExtra("calDirStart", calDist)
+                meta.putExtra("paceStart", GPSTools.getPace(totalTime, calDist))
             }
 
             if (lastCp != null && lastLocation != null){
@@ -178,27 +240,27 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
                         lastCp!!.pLng,
                         lastLocation!!.latitude,
                         lastLocation!!.longitude))
+
+                val calDist = calculateDistance(lastCp!!.pLat, lastCp!!.pLng)
+
+                meta.putExtra("calDirCp", calDist)
+                meta.putExtra("paceCp", GPSTools.getPace(totalTime, calDist))
+
             }
 
             if (currentSession.isWayPointSet && lastLocation != null){
                 meta.putExtra("dirDirWp",
                     GPSTools.getDirectDistance(
-                        currentSession!!.wLat,
-                        currentSession!!.wLng,
+                        currentSession.wLat,
+                        currentSession.wLng,
                         lastLocation!!.latitude,
                         lastLocation!!.longitude))
+
+                val calDist = calculateDistance(currentSession.wLat, currentSession.wLng)
+
+                meta.putExtra("calDirWp", calDist)
+                meta.putExtra("paceWp", GPSTools.getPace(totalTime, calDist))
             }
-
-//            meta.putExtra("calDirStart", )
-//            meta.putExtra("calDirCp", )
-//            meta.putExtra("calDirWp", )
-
-//            meta.putExtra("paceStart", )
-//            meta.putExtra("paceCp", )
-//            meta.putExtra("paceWp", )
-
-            meta.putExtra("totalTime", GPSTools.getTimeBetween(Timestamp(Date().time), currentSession.creatingTime))
-
 
             LocalBroadcastManager.getInstance(applicationContext)
                 .sendBroadcast(meta)
@@ -210,18 +272,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
     }
 
     override fun onLocationChanged(location: Location?) {
-        val intent = Intent(Intents.INTENT_UI_UPDATE_LOCATION.getAction())
-        intent.putExtra("lat", location!!.latitude)
-        intent.putExtra("lng", location!!.longitude)
-
-        LocalBroadcastManager.getInstance(applicationContext)
-            .sendBroadcast(intent)
-
-        val points = PointRepo(this).open()
-        points.add(Point(currentSession.id, 2, location!!.latitude, location!!.longitude))
-
-        if (firstLocation == null) firstLocation = location
-        lastLocation = location
+        addRp(location!!)
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {

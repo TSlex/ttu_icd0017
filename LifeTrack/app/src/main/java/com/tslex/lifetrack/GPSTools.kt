@@ -1,6 +1,7 @@
 package com.tslex.lifetrack
 
 import android.location.Criteria
+import android.util.Log
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,19 +24,26 @@ class GPSTools {
             return ceil(c * R).toInt()
         }
 
-        fun getRouteDistance(lat_1: Double, lng_1: Double, lat_2: Double, lng_2: Double): Int{
-
-            val url = "https://maps.googleapis.com/maps/api/directions/json?origin=$lat_1,$lng_1&destination=$lat_2,$lng_2&mode=walking&key=AIzaSyBslcjgHoUpNTCkCeVQeVCwwtjCrBnUbHg"
-
-            return 0
+        fun getTimeBetween(time1: Timestamp, time2: Timestamp): Long{
+            return abs(time1.time - time2.time)
         }
 
-        fun getTimeBetween(time1: Timestamp, time2: Timestamp): String{
-            val diff = abs(time1.time - time2.time)
+        fun formatRawTime(rawTime: Long) : String{
             val sdf = SimpleDateFormat("HH:mm:ss")
             sdf.timeZone = TimeZone.getTimeZone("GMT")
 
-            return sdf.format(Date(diff))
+            return sdf.format(Date(rawTime))
+        }
+
+        fun getPace(rawTime: Long, distance: Int): String{
+
+            val distKm: Double = (distance.toDouble() / 1000)
+
+            if (distKm <= .0){
+                return "00:00:00"
+            }
+
+            return formatRawTime((rawTime.toDouble() / distKm).roundToLong())
         }
 
         fun getTimeInIso(time: Timestamp): String{
