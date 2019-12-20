@@ -8,7 +8,7 @@ import java.util.*
 import kotlin.math.*
 
 
-class GPSTools {
+class AssistTools {
     companion object{
         const val R = 6371e3
 

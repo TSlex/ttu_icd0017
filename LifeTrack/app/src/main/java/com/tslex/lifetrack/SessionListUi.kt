@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.core.content.FileProvider
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tslex.lifetrack.repo.PointRepo
@@ -104,7 +103,7 @@ class SessionListUi : AppCompatActivity() {
                     "version=\"1.0\"\n" +
                     "creator=\"com.tslex.lifetrack\"\n" +
                     "author=\"Aleksandr Ivanov\"\n" +
-                    "time=\"${GPSTools.getTimeInIso(session.creatingTime)}\"\n" +
+                    "time=\"${AssistTools.getTimeInIso(session.creatingTime)}\"\n" +
                     "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
                     "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n"
         )
@@ -112,14 +111,14 @@ class SessionListUi : AppCompatActivity() {
 
         for (point in cPoints){
             writer.write("<wpt lat=\"${point.pLat}\" lon=\"${point.pLng}\">")
-            writer.write("<time>${GPSTools.getTimeInIso(point.timeOfCreating)}</time>")
+            writer.write("<time>${AssistTools.getTimeInIso(point.timeOfCreating)}</time>")
             writer.write("</wpt>\n")
         }
 
         writer.write("<rte>")
         for (point in rPoints){
             writer.write("<rtept lat=\"${point.pLat}\" lon=\"${point.pLng}\">")
-            writer.write("<time>${GPSTools.getTimeInIso(point.timeOfCreating)}</time>")
+            writer.write("<time>${AssistTools.getTimeInIso(point.timeOfCreating)}</time>")
             writer.write("</rtept>\n")
         }
         writer.write("</rte>")

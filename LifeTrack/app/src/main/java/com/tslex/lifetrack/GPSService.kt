@@ -13,7 +13,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
-import android.util.TimeUtils
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -25,9 +24,7 @@ import com.tslex.lifetrack.repo.PTypeRepo
 import com.tslex.lifetrack.repo.PointRepo
 import com.tslex.lifetrack.repo.SessionRepo
 import java.lang.Exception
-import java.sql.Time
 import java.sql.Timestamp
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -48,6 +45,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
     private var lastLocation: Location? = null
     private var firstLocation: Location? = null
+    private var unsureLocation: Location? = null
 
     private var lastCp: Point? = null
 
@@ -82,7 +80,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
     }
 
     private fun setUpLocations() {
-        criteria = GPSTools.getCriteria()
+        criteria = AssistTools.getCriteria()
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationProvider = locationManager.getBestProvider(criteria, true)!!
     }
@@ -111,7 +109,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
     private fun startListener() {
         try {
-            locationManager.requestLocationUpdates(2000, 0.1f, criteria, this, null)
+            locationManager.requestLocationUpdates(1000, 0.1f, criteria, this, null)
         } catch (e: SecurityException) {
             Log.e("MAIN", e.toString())
         }
@@ -203,17 +201,16 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         for (p in pointList){
             if (p.pLat == lat && p.pLng == lng){
                 if (lastPoint != null){
-                    sum += GPSTools.getDirectDistance(lastPoint.pLat, lastPoint.pLng, p.pLat, p.pLng)
+                    sum += AssistTools.getDirectDistance(lastPoint.pLat, lastPoint.pLng, p.pLat, p.pLng)
                 }
                 break
             }
             if (lastPoint == null){
-//                sum += GPSTools.getDirectDistance(lastLocation!!.latitude, lastLocation!!.longitude, p.pLat, p.pLng)
                 lastPoint = p
                 continue
             }
             else{
-                sum += GPSTools.getDirectDistance(lastPoint.pLat, lastPoint.pLng, p.pLat, p.pLng)
+                sum += AssistTools.getDirectDistance(lastPoint.pLat, lastPoint.pLng, p.pLat, p.pLng)
                 lastPoint = p
             }
         }
@@ -241,14 +238,14 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         thread.scheduleAtFixedRate({
 
             val meta = Intent(Intents.INTENT_UI_UPDATE_META.getAction())
-            val totalTime = GPSTools.getTimeBetween(Timestamp(Date().time), currentSession.creatingTime)
+            val totalTime = AssistTools.getTimeBetween(Timestamp(Date().time), currentSession.creatingTime)
 
-            currentSession.sessionTime = GPSTools.formatRawTime(totalTime)
+            currentSession.sessionTime = AssistTools.formatRawTime(totalTime)
             meta.putExtra("totalTime", currentSession.sessionTime)
 
             if (firstLocation != null && lastLocation != null){
 
-                currentSession.dirDistStart = GPSTools.getDirectDistance(
+                currentSession.dirDistStart = AssistTools.getDirectDistance(
                     firstLocation!!.latitude,
                     firstLocation!!.longitude,
                     lastLocation!!.latitude,
@@ -259,14 +256,14 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
                 val calDist = calculateDistance(firstLocation!!.latitude, firstLocation!!.longitude)
 
                 currentSession.calDirStart = calDist
-                currentSession.paceStart = GPSTools.getPace(totalTime, calDist)
+                currentSession.paceStart = AssistTools.getPace(totalTime, calDist)
                 meta.putExtra("calDirStart", currentSession.calDirStart)
                 meta.putExtra("paceStart", currentSession.paceStart)
             }
 
             if (lastCp != null && lastLocation != null){
 
-                currentSession.dirDirCp = GPSTools.getDirectDistance(
+                currentSession.dirDirCp = AssistTools.getDirectDistance(
                     lastCp!!.pLat,
                     lastCp!!.pLng,
                     lastLocation!!.latitude,
@@ -275,14 +272,14 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
                 val calDist = calculateDistance(lastCp!!.pLat, lastCp!!.pLng)
                 currentSession.calDirCp = calDist
-                currentSession.paceCp = GPSTools.getPace(totalTime, calDist)
+                currentSession.paceCp = AssistTools.getPace(totalTime, calDist)
                 meta.putExtra("calDirCp", currentSession.calDirCp)
                 meta.putExtra("paceCp", currentSession.paceCp)
 
             }
 
             if (currentSession.isWayPointSet && lastLocation != null){
-                currentSession.dirDirWp = GPSTools.getDirectDistance(
+                currentSession.dirDirWp = AssistTools.getDirectDistance(
                     currentSession.wLat,
                     currentSession.wLng,
                     lastLocation!!.latitude,
@@ -291,7 +288,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
                 val calDist = calculateDistance(currentSession.wLat, currentSession.wLng)
                 currentSession.calDirWp = calDist
-                currentSession.paceWp = GPSTools.getPace(totalTime, calDist)
+                currentSession.paceWp = AssistTools.getPace(totalTime, calDist)
                 meta.putExtra("calDirWp", currentSession.calDirWp)
                 meta.putExtra("paceWp", currentSession.paceWp)
             }
@@ -327,12 +324,12 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         notifyView.setOnClickPendingIntent(R.id.notBCp, pendingIntentCp)
         notifyView.setOnClickPendingIntent(R.id.notBWp, pendingIntentWp)
 
-        val totalTime = GPSTools.getTimeBetween(Timestamp(Date().time), currentSession.creatingTime)
+        val totalTime = AssistTools.getTimeBetween(Timestamp(Date().time), currentSession.creatingTime)
 
-        notifyView.setTextViewText(R.id.notTT, GPSTools.formatRawTime(totalTime))
+        notifyView.setTextViewText(R.id.notTT, AssistTools.formatRawTime(totalTime))
 
         if (firstLocation != null && lastLocation != null){
-            notifyView.setTextViewText(R.id.notSD, "${GPSTools.getDirectDistance(
+            notifyView.setTextViewText(R.id.notSD, "${AssistTools.getDirectDistance(
                 firstLocation!!.latitude,
                 firstLocation!!.longitude,
                 lastLocation!!.latitude,
@@ -340,11 +337,11 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
             val calDist = calculateDistance(firstLocation!!.latitude, firstLocation!!.longitude)
             notifyView.setTextViewText(R.id.notSC, "${calDist}m")
-            notifyView.setTextViewText(R.id.notSP, GPSTools.getPace(totalTime, calDist))
+            notifyView.setTextViewText(R.id.notSP, AssistTools.getPace(totalTime, calDist))
         }
 
         if (lastCp != null && lastLocation != null){
-            notifyView.setTextViewText(R.id.notCD, "${GPSTools.getDirectDistance(
+            notifyView.setTextViewText(R.id.notCD, "${AssistTools.getDirectDistance(
                 lastCp!!.pLat,
                 lastCp!!.pLng,
                 lastLocation!!.latitude,
@@ -352,11 +349,11 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
             val calDist = calculateDistance(lastCp!!.pLat, lastCp!!.pLng)
             notifyView.setTextViewText(R.id.notCC, "${calDist}m")
-            notifyView.setTextViewText(R.id.notCP, GPSTools.getPace(totalTime, calDist))
+            notifyView.setTextViewText(R.id.notCP, AssistTools.getPace(totalTime, calDist))
         }
 
         if (currentSession.isWayPointSet && lastLocation != null){
-            notifyView.setTextViewText(R.id.notWD, "${GPSTools.getDirectDistance(
+            notifyView.setTextViewText(R.id.notWD, "${AssistTools.getDirectDistance(
                 currentSession.wLat,
                 currentSession.wLng,
                 lastLocation!!.latitude,
@@ -364,7 +361,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
             val calDist = calculateDistance(currentSession.wLat, currentSession.wLng)
             notifyView.setTextViewText(R.id.notWC, "${calDist}m")
-            notifyView.setTextViewText(R.id.notWP, GPSTools.getPace(totalTime, calDist))
+            notifyView.setTextViewText(R.id.notWP, AssistTools.getPace(totalTime, calDist))
         }
 
         var builder = NotificationCompat.Builder(this, "com.tslex.lifetrack.notify")
@@ -380,6 +377,44 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
     }
 
     override fun onLocationChanged(location: Location?) {
+        if (lastLocation != null) {
+            if (AssistTools.getDirectDistance(
+                    location!!.latitude,
+                    location!!.longitude,
+                    lastLocation!!.latitude,
+                    lastLocation!!.longitude
+                ) < 2) return
+
+            if (unsureLocation == null
+                && AssistTools.getDirectDistance(
+                    location!!.latitude,
+                    location!!.longitude,
+                    lastLocation!!.latitude,
+                    lastLocation!!.longitude
+                ) > 100
+            ) {
+                unsureLocation = location
+                return
+            } else if (unsureLocation != null) {
+                if (AssistTools.getDirectDistance(
+                        location!!.latitude,
+                        location!!.longitude,
+                        lastLocation!!.latitude,
+                        lastLocation!!.longitude
+                    ) <= 100
+                ) {
+                    addRp(location!!)
+                    unsureLocation = null
+                    return
+                } else {
+                    addRp(unsureLocation!!)
+                    addRp(location!!)
+                    unsureLocation = null
+                    return
+                }
+            }
+        }
+
         addRp(location!!)
     }
 

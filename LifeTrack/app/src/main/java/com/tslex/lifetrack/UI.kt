@@ -44,7 +44,6 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     private lateinit var locationProvider: String
     private lateinit var criteria: Criteria
     private lateinit var preferences: SharedPreferences
-    private lateinit var thread: ScheduledExecutorService
 
     lateinit var sensorManager: SensorManager
     lateinit var accSensor: Sensor
