@@ -101,6 +101,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_margin="4dp"
+            android:onClick="onCompassClicked"
             android:src="@drawable/compass_v2" />
 
         <ImageButton

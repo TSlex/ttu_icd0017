@@ -242,6 +242,12 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
     }
 
+    fun onCompassClicked(view: View) {
+        if (isMapReady){
+            faceCamera(0f)
+        }
+    }
+
     fun onZoomButtonClicked(view: View) {
         zoomIn()
     }
