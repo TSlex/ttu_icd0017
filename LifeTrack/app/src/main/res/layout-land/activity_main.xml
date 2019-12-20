@@ -31,6 +31,7 @@
 
         <Button
             android:id="@+id/buttonSessions"
+            style="@style/MyButton"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -40,6 +41,7 @@
 
         <Button
             android:id="@+id/buttonMenu"
+            style="@style/MyButton"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -48,6 +50,7 @@
 
         <Button
             android:id="@+id/buttonResume"
+            style="@style/MyButton"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -57,6 +60,7 @@
 
         <Button
             android:id="@+id/buttonStart"
+            style="@style/MyButton"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -65,6 +69,7 @@
 
         <Button
             android:id="@+id/buttonStop"
+            style="@style/MyButton"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -73,6 +78,7 @@
 
         <Button
             android:id="@+id/buttonPause"
+            style="@style/MyButton"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -94,12 +100,14 @@
             android:id="@+id/compass"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_margin="4dp"
             android:src="@drawable/compass_v2" />
 
         <ImageButton
             android:id="@+id/buttonZoom"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_margin="4dp"
             android:background="@null"
             android:onClick="onZoomButtonClicked"
             android:scaleType="fitCenter"
@@ -110,6 +118,7 @@
             android:id="@+id/buttonWp"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_margin="4dp"
             android:background="@null"
             android:onClick="onWpButtonClicked"
             android:scaleType="fitCenter"
@@ -120,6 +129,7 @@
             android:id="@+id/buttonCp"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_margin="4dp"
             android:background="@null"
             android:onClick="onCpButtonClicked"
             android:scaleType="fitCenter"

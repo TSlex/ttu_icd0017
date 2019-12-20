@@ -10,6 +10,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <dist:module dist:instant="true" />
@@ -25,7 +26,6 @@
 
         <activity android:name=".SessionListUi" />
         <activity android:name=".Preferences" />
-        <activity android:name=".Menu" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

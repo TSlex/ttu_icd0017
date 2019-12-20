@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/nice2"
     tools:context=".SessionListUi">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -36,6 +37,7 @@
 
         <Button
             android:id="@+id/buttonUpdate"
+            style="@style/MyButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -44,6 +46,7 @@
 
         <Button
             android:id="@+id/buttonClose"
+            style="@style/MyButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

@@ -1,9 +1,6 @@
 package com.tslex.lifetrack
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -53,6 +50,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
     override fun onCreate() {
         super.onCreate()
+        Log.d("Servicelife", "onCreate")
 
         val intentFilter = IntentFilter()
         intentFilter.addAction(Intents.INTENT_TRACKING_PAUSE.getAction())
@@ -75,8 +73,14 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
     override fun onDestroy() {
         super.onDestroy()
 
+        LocalBroadcastManager.getInstance(applicationContext)
+            .unregisterReceiver(broadcastReceiver)
+
+        unregisterReceiver(broadcastReceiver)
+
         stopListener()
-        NotificationManagerCompat.from(this).cancel(0)
+        NotificationManagerCompat.from(this).cancel(1)
+        Log.d("Servicelife", "onDestroy")
     }
 
     private fun setUpLocations() {
@@ -114,13 +118,19 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
             Log.e("MAIN", e.toString())
         }
 
+        startForeground(1, getNotification())
+
         startMetaUpdating()
     }
 
     private fun stopListener() {
+        Log.d(TAG, "onListenerStop")
+
         locationManager.removeUpdates(this)
 
         stopMetaUpdating()
+
+        stopForeground(true)
     }
 
     private fun addCp(){
@@ -170,6 +180,8 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
     }
 
     private fun addRp(location: Location): Point{
+        Log.d("rtrack", "added")
+
         val intent = Intent(Intents.INTENT_UI_UPDATE_LOCATION.getAction())
         intent.putExtra("lat", location.latitude)
         intent.putExtra("lng", location.longitude)
@@ -304,20 +316,28 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
     private fun stopMetaUpdating(){
         try {
-            thread.shutdown()
+            thread.shutdownNow()
         }catch (ignored: Exception){}
 
         NotificationManagerCompat.from(this).cancel(0)
     }
 
     private fun updateNotification(){
+        NotificationManagerCompat.from(this).notify(1, getNotification())
+    }
+
+    private fun getNotification(): Notification{
         val notifyView = RemoteViews(packageName, R.layout.notification_ui)
 
         val intentCp = Intent(Intents.INTENT_ADD_CP.getAction())
         val intentWp = Intent(Intents.INTENT_ADD_WP.getAction())
+
         val intent = Intent(this, UI::class.java)
+        intent.putExtra("sessionStarted", true)
+        intent.putExtra("notEmpty", true)
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+
         val pendingIntentCp = PendingIntent.getBroadcast(this, 0, intentCp, 0)
         val pendingIntentWp = PendingIntent.getBroadcast(this, 0, intentWp, 0)
 
@@ -373,10 +393,12 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
         builder.setContent(notifyView)
 
-        NotificationManagerCompat.from(this).notify(0, builder.build())
+        return builder.build()
     }
 
     override fun onLocationChanged(location: Location?) {
+        Log.d(TAG, "locationUpdate")
+
         if (lastLocation != null) {
             if (AssistTools.getDirectDistance(
                     location!!.latitude,
@@ -435,9 +457,9 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         private val TAG = this::class.java.simpleName
 
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d(TAG, "onReceive")
-
             val action = intent?.action
+
+            Log.d(TAG, action)
 
             when (action) {
                 Intents.INTENT_TRACKING_RESUME.getAction() -> {
@@ -448,6 +470,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
                 }
                 Intents.INTENT_TRACKING_STOP.getAction() -> {
                     stopListener()
+                    onDestroy()
                 }
                 Intents.INTENT_ADD_WP.getAction() -> {
 //                    val latitude = intent.getDoubleExtra("lat", .0)

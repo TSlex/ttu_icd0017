@@ -172,6 +172,7 @@ class SessionRepo (val context: Context) {
         contentValue.put(DbHelper.SESSION_CDIST_CP, session.calDirCp)
         contentValue.put(DbHelper.SESSION_CDIST_WP, session.calDirWp)
 
+
         db.update(DbHelper.SESSION_TABLE_NAME, contentValue, "" +
                 "${DbHelper.SESSION_ID} = ${session.id}", null)
         db.setTransactionSuccessful()

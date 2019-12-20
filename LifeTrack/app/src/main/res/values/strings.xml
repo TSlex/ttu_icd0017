@@ -22,4 +22,7 @@
     <string name="pref_map_default">light</string>
     <!--end preferences-->
 
+    <string name="last_latitude" />
+    <string name="last_longitude" />
+
 </resources>

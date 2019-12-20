@@ -36,7 +36,7 @@
             android:layout_weight="1"
             android:onClick="onSessionsButtonClicked"
             android:text="open sessions"
-            android:visibility="visible" />
+            style="@style/MyButton" />
 
         <Button
             android:id="@+id/buttonMenu"
@@ -44,7 +44,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="onSettingsButtonClicked"
-            android:text="settings" />
+            android:text="settings"
+            style="@style/MyButton"/>
     </LinearLayout>
 
     <LinearLayout
@@ -59,6 +60,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            style="@style/MyButton"
             android:onClick="onStartButtonClicked"
             android:text="Start" />
 
@@ -67,6 +69,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            style="@style/MyButton"
             android:onClick="onPauseButtonClicked"
             android:text="Pause"
             tools:visibility="gone" />
@@ -78,6 +81,7 @@
             android:layout_weight="1"
             android:onClick="onResumeButtonClicked"
             android:text="Resume"
+            style="@style/MyButton"
             tools:visibility="gone" />
 
         <Button
@@ -86,6 +90,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="onStopButtonClicked"
+            style="@style/MyButton"
             android:text="Stop" />
     </LinearLayout>
 
@@ -97,7 +102,6 @@
         android:layout_marginTop="70dp"
         android:layout_marginRight="10dp"
         android:src="@drawable/compass_v2"/>
-
 
     <ImageButton
         android:id="@+id/buttonZoom"
@@ -126,6 +130,7 @@
             android:id="@+id/buttonWp"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_marginBottom="4dp"
             android:background="@null"
             android:onClick="onWpButtonClicked"
             android:scaleType="fitCenter"

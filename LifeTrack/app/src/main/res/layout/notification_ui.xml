@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/nice2"
     android:maxHeight="64dp"
     android:minHeight="64dp">
 
@@ -188,12 +189,12 @@
 
         <ImageButton
             android:id="@+id/notBCp"
-            tools:visibility="visible"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
             android:scaleType="fitCenter"
-            android:src="@drawable/checkpoint" />
+            android:src="@drawable/checkpoint"
+            tools:visibility="visible" />
     </LinearLayout>
 </RelativeLayout>
