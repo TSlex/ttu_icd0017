@@ -107,7 +107,7 @@
             tools:visibility="visible" />
 
         <ImageButton
-            android:id="@+id/notBWp"
+            android:id="@+id/buttonWp"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@null"

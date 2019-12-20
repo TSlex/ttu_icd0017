@@ -50,6 +50,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     lateinit var accSensor: Sensor
 
     private val broadcastReceiver = UIBroadcastReceiver()
+    private val intentFilter = IntentFilter()
+
     private val TAG = this::class.java.simpleName
 
     private var isMapReady = false
@@ -60,12 +62,15 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
     private var polyline: Polyline? = null
 
+    private var isSessionStarted = false
     private var isRequestingZoom = false
     private var isRequestingRestore = false
     private var isNotEmpty = false
 
+    private var currentSession: Session? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate")
+        Log.d("LIFE", "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -100,54 +105,61 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         mapFragment.getMapAsync(this)
 
         //Intentfilters
-        val intentFilter = IntentFilter()
         intentFilter.addAction(Intents.INTENT_UI_UPDATE_LOCATION.getAction())
         intentFilter.addAction(Intents.INTENT_UI_UPDATE_META.getAction())
         intentFilter.addAction(Intents.INTENT_UI_PLACE_CP.getAction())
         intentFilter.addAction(Intents.INTENT_UI_PLACE_WP.getAction())
         intentFilter.addAction(Intents.INTENT_COMPASS_UPDATE.getAction())
 
-        LocalBroadcastManager.getInstance(applicationContext)
-            .registerReceiver(broadcastReceiver, intentFilter)
-
         criteria = Criteria()
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationProvider = locationManager.getBestProvider(criteria, false)!!
         Log.d("MAIN", locationProvider)
 
-//        thread = Executors.newScheduledThreadPool(1)
-//        thread.scheduleAtFixedRate({
-//            LocalBroadcastManager.getInstance(applicationContext)
-//                .sendBroadcast(Intent(Intents.INTENT_COMPASS_UPDATE.getAction()))
-//        }, 0, 100, TimeUnit.MILLISECONDS)
-
         applySettings()
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy")
+        Log.d("LIFE", "onDestroy")
         super.onDestroy()
-
-        stopService()
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume")
+        Log.d("LIFE", "onResume")
         applySettings()
 
         if (isMapReady) {
             updateMap()
         }
 
+        if (isSessionStarted){
+            buttonStart.visibility = View.GONE
+            buttonPause.visibility = View.VISIBLE
+
+            setPointsButtonsEnabled(true)
+        }
+
+        if (isSessionStarted){
+            LocalBroadcastManager.getInstance(applicationContext)
+                .sendBroadcast(Intent(Intents.INTENT_TRACKING_RESUME.getAction()))
+        }
+
         sensorManager.registerListener(this, accSensor, SensorManager.SENSOR_DELAY_FASTEST)
+        LocalBroadcastManager.getInstance(applicationContext)
+            .registerReceiver(broadcastReceiver, intentFilter)
 
         super.onResume()
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause")
+        Log.d("LIFE", "onPause")
+
+        LocalBroadcastManager.getInstance(applicationContext)
+            .sendBroadcast(Intent(Intents.INTENT_TRACKING_PAUSE.getAction()))
 
         sensorManager.unregisterListener(this)
+        LocalBroadcastManager.getInstance(applicationContext)
+            .unregisterReceiver(broadcastReceiver)
 
         super.onPause()
     }
@@ -177,6 +189,11 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
     fun onZoomButtonClicked(view: View) {
 
+        if (currentPositionMarker != null){
+            myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPositionMarker!!.position, 16f))
+            locationManager.removeUpdates(this)
+        }
+
         isRequestingZoom = true
         locationUpdating.visibility = View.VISIBLE
 
@@ -200,6 +217,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     fun onStartButtonClicked(view: View) {
         val service = Intent(this, GPSService::class.java)
         startService(service)
+
+        isSessionStarted = true
 
         locationUpdating.visibility = View.VISIBLE
 
@@ -267,6 +286,7 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         buttonStart.visibility = View.VISIBLE
 
         setPointsButtonsEnabled(false)
+        isSessionStarted = false
     }
 
     fun onSettingsButtonClicked(view: View) {
@@ -280,17 +300,54 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        Log.d("LIFE", "onRestore")
         super.onRestoreInstanceState(savedInstanceState)
         isNotEmpty = savedInstanceState.getBoolean("notEmpty")
+        isSessionStarted = savedInstanceState.getBoolean("sessionStarted")
         isRequestingRestore = true
+
+        totalTime.text =    savedInstanceState.getString("totalTime") ?: "00:00:00"
+        paceStart.text =    savedInstanceState.getString("paceStart") ?: "00:00:00"
+        paceCp.text =       savedInstanceState.getString("paceCp") ?: "00:00:00"
+        paceWp.text =       savedInstanceState.getString("paceWp") ?: "00:00:00"
+
+        dirDirStart.text =  "${savedInstanceState.getInt("dirDirStart")}m" ?: "0m"
+        dirDirCp.text =     "${savedInstanceState.getInt("dirDirCp")}m" ?: "0m"
+        dirDirWp.text =     "${savedInstanceState.getInt("dirDirWp")}m" ?: "0m"
+
+        calDirStart.text =  "${savedInstanceState.getInt("calDirStart")}m" ?: "0m"
+        calDirCp.text =     "${savedInstanceState.getInt("calDirCp")}m" ?: "0m"
+        calDirWp.text =     "${savedInstanceState.getInt("calDirWp")}m" ?: "0m"
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
+    override fun onSaveInstanceState(outState: Bundle) {
+        Log.d("LIFE", "onSave")
+        super.onSaveInstanceState(outState)
         outState.putBoolean("notEmpty", isNotEmpty)
+        outState.putBoolean("sessionStarted", isSessionStarted)
 
         LocalBroadcastManager.getInstance(applicationContext)
             .unregisterReceiver(broadcastReceiver)
+
+        val sessions = SessionRepo(this).open()
+        if (currentSession == null){
+            currentSession = sessions.getLast()
+        }
+        sessions.close()
+
+        if (currentSession == null) return
+
+        outState.putString("totalTime", currentSession!!.sessionTime)
+        outState.putString("paceStart", currentSession!!.paceStart)
+        outState.putString("paceCp", currentSession!!.paceCp)
+        outState.putString("paceWp", currentSession!!.paceWp)
+
+        outState.putInt("dirDirStart", currentSession!!.dirDistStart)
+        outState.putInt("dirDirCp", currentSession!!.dirDirCp)
+        outState.putInt("dirDirWp", currentSession!!.dirDirWp)
+        outState.putInt("calDirStart", currentSession!!.calDirStart)
+        outState.putInt("calDirCp", currentSession!!.calDirCp)
+        outState.putInt("calDirWp", currentSession!!.calDirWp)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -347,8 +404,6 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
         polyline!!.points = tmp
 
-//                Log.d("ActivityResult", "add polyline")
-
         for (point in cPoints){
             lastCp = myMap.addMarker(
                 MarkerOptions()
@@ -364,6 +419,13 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
                     .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("wp_marker", 150, 150)))
             )
         }
+
+        currentPositionMarker = myMap.addMarker(
+            MarkerOptions()
+                .position(LatLng(last.pLat, last.pLng))
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("curr_pos_marker", 100, 100)))
+                .anchor(0.5f, 0.5f)
+        )
 
         if (sessionId != 0) {
 
@@ -387,6 +449,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
                 )
             )
         }
+
+        currentSession = session
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -464,11 +528,13 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
     fun updateLocation(latitude: Double, longitude: Double) {
 
+        if (!isMapReady) return
+
         locationUpdating.visibility = View.GONE
 
         val latLng = LatLng(latitude, longitude)
 
-        val tmp = polyline!!.points
+        val tmp = polyline?.points ?: return
         tmp.add(latLng)
         polyline!!.points = tmp
 
@@ -477,7 +543,6 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
             myMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
         }
 
-        var icon =
         currentPositionMarker?.remove()
         currentPositionMarker = myMap.addMarker(
             MarkerOptions()
