@@ -139,11 +139,6 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
             setPointsButtonsEnabled(true)
         }
 
-        if (isSessionStarted){
-            LocalBroadcastManager.getInstance(applicationContext)
-                .sendBroadcast(Intent(Intents.INTENT_TRACKING_RESUME.getAction()))
-        }
-
         sensorManager.registerListener(this, accSensor, SensorManager.SENSOR_DELAY_FASTEST)
         LocalBroadcastManager.getInstance(applicationContext)
             .registerReceiver(broadcastReceiver, intentFilter)
@@ -153,9 +148,6 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
     override fun onPause() {
         Log.d("LIFE", "onPause")
-
-        LocalBroadcastManager.getInstance(applicationContext)
-            .sendBroadcast(Intent(Intents.INTENT_TRACKING_PAUSE.getAction()))
 
         sensorManager.unregisterListener(this)
         LocalBroadcastManager.getInstance(applicationContext)
