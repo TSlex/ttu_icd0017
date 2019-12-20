@@ -125,7 +125,9 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="100dp"
-        android:orientation="vertical">
+        android:background="@drawable/info_background"
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -149,6 +151,7 @@
                 android:text="0m" />
 
         </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -166,6 +169,7 @@
                 android:text="0m" />
 
         </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -206,6 +210,7 @@
                 android:text="0m" />
 
         </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -223,6 +228,7 @@
                 android:text="0m" />
 
         </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -263,6 +269,7 @@
                 android:text="00:00:00" />
 
         </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -280,6 +287,7 @@
                 android:text="00:00:00" />
 
         </RelativeLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">

@@ -27,13 +27,13 @@ class Session {
     var calDirWp: Int = 0
 
 
-    constructor(id: Int, wLat: Double, wLng: Double, creatingTime: Timestamp, isWayPointSet: Boolean) {
-        this.id = id
-        this.wLat = wLat
-        this.wLng = wLng
-        this.creatingTime = creatingTime
-        this.isWayPointSet = isWayPointSet
-    }
+//    constructor(id: Int, wLat: Double, wLng: Double, creatingTime: Timestamp, isWayPointSet: Boolean) {
+//        this.id = id
+//        this.wLat = wLat
+//        this.wLng = wLng
+//        this.creatingTime = creatingTime
+//        this.isWayPointSet = isWayPointSet
+//    }
 
     constructor() {
         this.wLat = .0
@@ -42,37 +42,37 @@ class Session {
         this.isWayPointSet = false
     }
 
-//    constructor(
-//        id: Int,
-//        wLat: Double,
-//        wLng: Double,
-//        creatingTime: Timestamp,
-//        isWayPointSet: Boolean,
-//        sessionTime: String,
-//        paceStart: String,
-//        paceCp: String,
-//        paceWp: String,
-//        dirDistStart: Int,
-//        dirDirCp: Int,
-//        dirDirWp: Int,
-//        calDirStart: Int,
-//        calDirCp: Int,
-//        calDirWp: Int
-//    ) {
-//        this.id = id
-//        this.wLat = wLat
-//        this.wLng = wLng
-//        this.creatingTime = creatingTime
-//        this.isWayPointSet = isWayPointSet
-//        this.sessionTime = sessionTime
-//        this.paceStart = paceStart
-//        this.paceCp = paceCp
-//        this.paceWp = paceWp
-//        this.dirDistStart = dirDistStart
-//        this.dirDirCp = dirDirCp
-//        this.dirDirWp = dirDirWp
-//        this.calDirStart = calDirStart
-//        this.calDirCp = calDirCp
-//        this.calDirWp = calDirWp
-//    }
+    constructor(
+        id: Int,
+        wLat: Double,
+        wLng: Double,
+        creatingTime: Timestamp,
+        isWayPointSet: Boolean,
+        sessionTime: String,
+        paceStart: String,
+        paceCp: String,
+        paceWp: String,
+        dirDistStart: Int,
+        dirDirCp: Int,
+        dirDirWp: Int,
+        calDirStart: Int,
+        calDirCp: Int,
+        calDirWp: Int
+    ) {
+        this.id = id
+        this.wLat = wLat
+        this.wLng = wLng
+        this.creatingTime = creatingTime
+        this.isWayPointSet = isWayPointSet
+        this.sessionTime = sessionTime
+        this.paceStart = paceStart
+        this.paceCp = paceCp
+        this.paceWp = paceWp
+        this.dirDistStart = dirDistStart
+        this.dirDirCp = dirDirCp
+        this.dirDirWp = dirDirWp
+        this.calDirStart = calDirStart
+        this.calDirCp = calDirCp
+        this.calDirWp = calDirWp
+    }
 }

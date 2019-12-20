@@ -150,12 +150,10 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
         val tmp = lastLocation!!
 
-        val sessions = SessionRepo(this).open()
         currentSession.isWayPointSet = true
         currentSession.wLat = tmp.latitude
         currentSession.wLng = tmp.longitude
-        sessions.update(currentSession)
-        sessions.close()
+        updateSession()
 
         addRp(tmp)
 
@@ -165,6 +163,12 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
         LocalBroadcastManager.getInstance(applicationContext)
             .sendBroadcast(intent)
+    }
+
+    private fun updateSession(){
+        val sessions = SessionRepo(this).open()
+        sessions.update(currentSession)
+        sessions.close()
     }
 
     private fun addRp(location: Location): Point{
@@ -239,6 +243,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
             val meta = Intent(Intents.INTENT_UI_UPDATE_META.getAction())
             val totalTime = GPSTools.getTimeBetween(Timestamp(Date().time), currentSession.creatingTime)
 
+            currentSession.sessionTime = GPSTools.formatRawTime(totalTime)
             meta.putExtra("totalTime", GPSTools.formatRawTime(totalTime))
 
             if (firstLocation != null && lastLocation != null){

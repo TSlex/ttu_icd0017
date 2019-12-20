@@ -42,7 +42,18 @@ class SessionRepo (val context: Context) {
                             cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LAT)),
                             cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LNG)),
                             Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_CREATING_TIME))),
-                            cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_SET)) == 1
+                            cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_SET)) == 1,
+                            
+                            cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_TOTAL_TIME)),
+                            cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_PACE_START)),
+                            cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_PACE_CP)),
+                            cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_PACE_WP)),
+                            cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_DDIST_START)),
+                            cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_DDIST_CP)),
+                            cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_DDIST_WP)),
+                            cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_CDIST_START)),
+                            cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_CDIST_CP)),
+                            cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_CDIST_WP))
                         )
                     )
 
@@ -66,7 +77,18 @@ class SessionRepo (val context: Context) {
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LAT)),
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LNG)),
                     Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_CREATING_TIME))),
-                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_SET)) == 1
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_SET)) == 1,
+
+                    cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_TOTAL_TIME)),
+                    cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_PACE_START)),
+                    cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_PACE_CP)),
+                    cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_PACE_WP)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_DDIST_START)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_DDIST_CP)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_DDIST_WP)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_CDIST_START)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_CDIST_CP)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_CDIST_WP))
                 )
             }
             return null
@@ -76,10 +98,24 @@ class SessionRepo (val context: Context) {
     fun add(session: Session) {
         db.beginTransaction()
         val contentValue = ContentValues()
+        
         contentValue.put(DbHelper.SESSION_WAYPOINT_LAT, session.wLat)
         contentValue.put(DbHelper.SESSION_WAYPOINT_LNG, session.wLng)
         contentValue.put(DbHelper.SESSION_CREATING_TIME, session.creatingTime.toString())
         contentValue.put(DbHelper.SESSION_WAYPOINT_SET, (session.isWayPointSet.toInt()))
+
+        contentValue.put(DbHelper.SESSION_TOTAL_TIME, session.sessionTime)
+        contentValue.put(DbHelper.SESSION_PACE_START, session.paceStart)
+        contentValue.put(DbHelper.SESSION_PACE_CP, session.paceCp)
+        contentValue.put(DbHelper.SESSION_PACE_WP, session.paceWp)
+        contentValue.put(DbHelper.SESSION_DDIST_START, session.dirDistStart)
+        contentValue.put(DbHelper.SESSION_DDIST_CP, session.dirDirCp)
+        contentValue.put(DbHelper.SESSION_DDIST_WP, session.dirDirWp)
+        contentValue.put(DbHelper.SESSION_CDIST_START, session.calDirStart)
+        contentValue.put(DbHelper.SESSION_CDIST_CP, session.calDirCp)
+        contentValue.put(DbHelper.SESSION_CDIST_WP, session.calDirWp)
+        
+        
         db.insert(DbHelper.SESSION_TABLE_NAME, null, contentValue)
         db.setTransactionSuccessful()
         db.endTransaction()
@@ -98,7 +134,18 @@ class SessionRepo (val context: Context) {
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LAT)),
                     cursor.getDouble(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_LNG)),
                     Timestamp.valueOf(cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_CREATING_TIME))),
-                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_SET)) == 1
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_WAYPOINT_SET)) == 1,
+
+                    cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_TOTAL_TIME)),
+                    cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_PACE_START)),
+                    cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_PACE_CP)),
+                    cursor.getString(cursor.getColumnIndex(DbHelper.SESSION_PACE_WP)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_DDIST_START)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_DDIST_CP)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_DDIST_WP)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_CDIST_START)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_CDIST_CP)),
+                    cursor.getInt(cursor.getColumnIndex(DbHelper.SESSION_CDIST_WP))
                 )
             }
             return null
@@ -108,10 +155,22 @@ class SessionRepo (val context: Context) {
     fun update(session: Session){
         db.beginTransaction()
         val contentValue = ContentValues()
+
         contentValue.put(DbHelper.SESSION_WAYPOINT_LAT, session.wLat)
         contentValue.put(DbHelper.SESSION_WAYPOINT_LNG, session.wLng)
         contentValue.put(DbHelper.SESSION_CREATING_TIME, session.creatingTime.toString())
         contentValue.put(DbHelper.SESSION_WAYPOINT_SET, (session.isWayPointSet.toInt()))
+
+        contentValue.put(DbHelper.SESSION_TOTAL_TIME, session.sessionTime)
+        contentValue.put(DbHelper.SESSION_PACE_START, session.paceStart)
+        contentValue.put(DbHelper.SESSION_PACE_CP, session.paceCp)
+        contentValue.put(DbHelper.SESSION_PACE_WP, session.paceWp)
+        contentValue.put(DbHelper.SESSION_DDIST_START, session.dirDistStart)
+        contentValue.put(DbHelper.SESSION_DDIST_CP, session.dirDirCp)
+        contentValue.put(DbHelper.SESSION_DDIST_WP, session.dirDirWp)
+        contentValue.put(DbHelper.SESSION_CDIST_START, session.calDirStart)
+        contentValue.put(DbHelper.SESSION_CDIST_CP, session.calDirCp)
+        contentValue.put(DbHelper.SESSION_CDIST_WP, session.calDirWp)
 
         db.update(DbHelper.SESSION_TABLE_NAME, contentValue, "" +
                 "${DbHelper.SESSION_ID} = ${session.id}", null)

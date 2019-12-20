@@ -15,15 +15,27 @@ class DbHelper(context: Context) : SQLiteOpenHelper(
 ) {
     companion object {
         const val DATABASE_NAME = "appdb.db"
-        const val DATABASE_VERSION = 11
+        const val DATABASE_VERSION = 12
 
         //Session
         const val SESSION_TABLE_NAME = "SESSION"
         const val SESSION_ID = "_id"
-        const val SESSION_WAYPOINT_LAT = "w_lat"
-        const val SESSION_WAYPOINT_LNG = "w_lng"
+        const val SESSION_WAYPOINT_LAT = "waypoint_latitude"
+        const val SESSION_WAYPOINT_LNG = "waypoint_longitude"
         const val SESSION_CREATING_TIME = "creating_time"
         const val SESSION_WAYPOINT_SET = "is_waypoint_set"
+
+        //Session Data
+        const val SESSION_TOTAL_TIME = "total_time"
+        const val SESSION_PACE_START = "pace_start"
+        const val SESSION_PACE_CP = "pace_checkpoint"
+        const val SESSION_PACE_WP = "pace_waypoint"
+        const val SESSION_DDIST_START = "direct_distance_from_start"
+        const val SESSION_DDIST_CP = "direct_distance_from_checkpoint"
+        const val SESSION_DDIST_WP = "direct_distance_from_waypoint"
+        const val SESSION_CDIST_START = "calculated_distance_from_start"
+        const val SESSION_CDIST_CP = "calculated_distance_from_checkpoint"
+        const val SESSION_CDIST_WP = "calculated_distance_from_waypoint"
 
         //Point
         const val POINT_TABLE_NAME = "POINT"
