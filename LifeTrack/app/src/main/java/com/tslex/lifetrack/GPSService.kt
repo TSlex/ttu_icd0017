@@ -244,53 +244,62 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
             val totalTime = GPSTools.getTimeBetween(Timestamp(Date().time), currentSession.creatingTime)
 
             currentSession.sessionTime = GPSTools.formatRawTime(totalTime)
-            meta.putExtra("totalTime", GPSTools.formatRawTime(totalTime))
+            meta.putExtra("totalTime", currentSession.sessionTime)
 
             if (firstLocation != null && lastLocation != null){
-                meta.putExtra("dirDirStart",
-                    GPSTools.getDirectDistance(
-                        firstLocation!!.latitude,
-                        firstLocation!!.longitude,
-                        lastLocation!!.latitude,
-                        lastLocation!!.longitude))
+
+                currentSession.dirDistStart = GPSTools.getDirectDistance(
+                    firstLocation!!.latitude,
+                    firstLocation!!.longitude,
+                    lastLocation!!.latitude,
+                    lastLocation!!.longitude)
+
+                meta.putExtra("dirDirStart", currentSession.dirDistStart)
 
                 val calDist = calculateDistance(firstLocation!!.latitude, firstLocation!!.longitude)
-                meta.putExtra("calDirStart", calDist)
-                meta.putExtra("paceStart", GPSTools.getPace(totalTime, calDist))
+
+                currentSession.calDirStart = calDist
+                currentSession.paceStart = GPSTools.getPace(totalTime, calDist)
+                meta.putExtra("calDirStart", currentSession.calDirStart)
+                meta.putExtra("paceStart", currentSession.paceStart)
             }
 
             if (lastCp != null && lastLocation != null){
-                meta.putExtra("dirDirCp",
-                    GPSTools.getDirectDistance(
-                        lastCp!!.pLat,
-                        lastCp!!.pLng,
-                        lastLocation!!.latitude,
-                        lastLocation!!.longitude))
+
+                currentSession.dirDirCp = GPSTools.getDirectDistance(
+                    lastCp!!.pLat,
+                    lastCp!!.pLng,
+                    lastLocation!!.latitude,
+                    lastLocation!!.longitude)
+                meta.putExtra("dirDirCp", currentSession.dirDirCp)
 
                 val calDist = calculateDistance(lastCp!!.pLat, lastCp!!.pLng)
-
-                meta.putExtra("calDirCp", calDist)
-                meta.putExtra("paceCp", GPSTools.getPace(totalTime, calDist))
+                currentSession.calDirCp = calDist
+                currentSession.paceCp = GPSTools.getPace(totalTime, calDist)
+                meta.putExtra("calDirCp", currentSession.calDirCp)
+                meta.putExtra("paceCp", currentSession.paceCp)
 
             }
 
             if (currentSession.isWayPointSet && lastLocation != null){
-                meta.putExtra("dirDirWp",
-                    GPSTools.getDirectDistance(
-                        currentSession.wLat,
-                        currentSession.wLng,
-                        lastLocation!!.latitude,
-                        lastLocation!!.longitude))
+                currentSession.dirDirWp = GPSTools.getDirectDistance(
+                    currentSession.wLat,
+                    currentSession.wLng,
+                    lastLocation!!.latitude,
+                    lastLocation!!.longitude)
+                meta.putExtra("dirDirWp", currentSession.dirDirWp)
 
                 val calDist = calculateDistance(currentSession.wLat, currentSession.wLng)
-
-                meta.putExtra("calDirWp", calDist)
-                meta.putExtra("paceWp", GPSTools.getPace(totalTime, calDist))
+                currentSession.calDirWp = calDist
+                currentSession.paceWp = GPSTools.getPace(totalTime, calDist)
+                meta.putExtra("calDirWp", currentSession.calDirWp)
+                meta.putExtra("paceWp", currentSession.paceWp)
             }
 
             LocalBroadcastManager.getInstance(applicationContext)
                 .sendBroadcast(meta)
 
+            updateSession()
             updateNotification()
 
         }, 0, 1, TimeUnit.SECONDS)

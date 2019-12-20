@@ -15,7 +15,7 @@ class DbHelper(context: Context) : SQLiteOpenHelper(
 ) {
     companion object {
         const val DATABASE_NAME = "appdb.db"
-        const val DATABASE_VERSION = 12
+        const val DATABASE_VERSION = 1
 
         //Session
         const val SESSION_TABLE_NAME = "SESSION"
@@ -59,8 +59,20 @@ class DbHelper(context: Context) : SQLiteOpenHelper(
                     "$SESSION_WAYPOINT_LAT REAL NOT NULL, " +
                     "$SESSION_WAYPOINT_LNG REAL NOT NULL, " +
                     "$SESSION_CREATING_TIME DATE NOT NULL, " +
-                    "$SESSION_WAYPOINT_SET INTEGER NOT NULL" +
+                    "$SESSION_WAYPOINT_SET INTEGER NOT NULL, " +
+
+                    "$SESSION_TOTAL_TIME TEXT NOT NULL, " +
+                    "$SESSION_PACE_START TEXT NOT NULL, " +
+                    "$SESSION_PACE_CP TEXT NOT NULL, " +
+                    "$SESSION_PACE_WP TEXT NOT NULL, " +
+                    "$SESSION_DDIST_START INTEGER NOT NULL, " +
+                    "$SESSION_DDIST_CP INTEGER NOT NULL, " +
+                    "$SESSION_DDIST_WP INTEGER NOT NULL, " +
+                    "$SESSION_CDIST_START INTEGER NOT NULL, " +
+                    "$SESSION_CDIST_CP INTEGER NOT NULL, " +
+                    "$SESSION_CDIST_WP INTEGER NOT NULL" +
                     ")"
+
         const val SQL_CREATE_POINT_TABLE =
             "CREATE TABLE IF NOT EXISTS $POINT_TABLE_NAME " +
                     "(" +

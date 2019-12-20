@@ -2,10 +2,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
+        android:defaultValue="false"
         android:key="@string/pref_north_face"
-        android:title="TOGGLE NORTH-UP"
-        android:defaultValue="true">
-    </CheckBoxPreference>
+        android:title="TOGGLE NORTH-UP"></CheckBoxPreference>
 
     <CheckBoxPreference
         android:key="@string/pref_center_map"

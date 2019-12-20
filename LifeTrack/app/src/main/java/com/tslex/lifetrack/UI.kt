@@ -2,12 +2,11 @@ package com.tslex.lifetrack
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Icon
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -16,7 +15,6 @@ import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.preference.PreferenceManager
@@ -25,7 +23,6 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.isVisible
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -33,13 +30,11 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.tslex.lifetrack.domain.Point
 import com.tslex.lifetrack.domain.Session
 import com.tslex.lifetrack.repo.PointRepo
 import com.tslex.lifetrack.repo.SessionRepo
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.ScheduledExecutorService
-import java.util.stream.Collectors
 
 
 class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEventListener {
@@ -58,10 +53,10 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     private val TAG = this::class.java.simpleName
 
     private var isMapReady = false
-    private var state: UIState = UIState.NONE
 
     private var lastWp: Marker? = null
     private var lastCp: Marker? = null
+    private var currentPositionMarker: Marker? = null
 
     private var polyline: Polyline? = null
 
@@ -78,8 +73,9 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         //hide
-        buttonPause.visibility = View.GONE
-        buttonResume.visibility = View.GONE
+        buttonPause.visibility =        View.GONE
+        buttonResume.visibility =       View.GONE
+        locationUpdating.visibility =   View.GONE
 
         //lock buttons
         setControlsButtonsEnabled(false)
@@ -161,6 +157,19 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         val degree = values[0]
 
         compass.rotation = degree * -1
+
+        val isMapFaceNorth = preferences.getBoolean(getString(R.string.pref_north_face), false)
+        if (isMapFaceNorth && isMapReady){
+            faceCamera(degree * -1)
+        }
+    }
+
+    private fun faceCamera(degree: Float){
+        val currentCamPosition = myMap.cameraPosition.target
+        val currentPlace = CameraPosition.Builder()
+                    .target(LatLng(currentCamPosition.latitude, currentCamPosition.longitude))
+                    .bearing(degree).build()
+        myMap.moveCamera(CameraUpdateFactory.newCameraPosition(currentPlace))
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -169,6 +178,7 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     fun onZoomButtonClicked(view: View) {
 
         isRequestingZoom = true
+        locationUpdating.visibility = View.VISIBLE
 
         try {
             locationManager.requestLocationUpdates(2000, 0.1f, criteria, this, null)
@@ -190,6 +200,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     fun onStartButtonClicked(view: View) {
         val service = Intent(this, GPSService::class.java)
         startService(service)
+
+        locationUpdating.visibility = View.VISIBLE
 
         isNotEmpty = false
 
@@ -224,6 +236,10 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     }
 
     fun onResumeButtonClicked(view: View) {
+
+        locationUpdating.visibility = View.VISIBLE
+
+
         LocalBroadcastManager.getInstance(applicationContext)
             .sendBroadcast(Intent(Intents.INTENT_TRACKING_RESUME.getAction()))
 
@@ -253,8 +269,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         setPointsButtonsEnabled(false)
     }
 
-    fun onMenuButtonClicked(view: View) {
-        val intent = Intent(this, Menu::class.java)
+    fun onSettingsButtonClicked(view: View) {
+        val intent = Intent(this, Preferences::class.java)
         startActivity(intent)
     }
 
@@ -350,6 +366,20 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         }
 
         if (sessionId != 0) {
+
+            totalTime.text =    session.sessionTime
+            paceStart.text =    session.paceStart
+            paceCp.text =       session.paceCp
+            paceWp.text =       session.paceWp
+
+            dirDirStart.text =  "${session.dirDistStart}m"
+            dirDirCp.text =     "${session.dirDirCp}m"
+            dirDirWp.text =     "${session.dirDirWp}m"
+
+            calDirStart.text =  "${session.calDirStart}m"
+            calDirCp.text =     "${session.calDirCp}m"
+            calDirWp.text =     "${session.calDirWp}m"
+
             myMap.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     LatLng(last.pLat, last.pLng),
@@ -378,7 +408,7 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     private fun updateMap() {
         myMap.isMyLocationEnabled = false
         myMap.uiSettings.isCompassEnabled = false
-//        mMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
+        faceCamera(0f)
 
         val mapStyles: Array<String> = resources.getStringArray(R.array.pref_map_style_values)
         when (preferences.getString(getString(R.string.pref_map_style), mapStyles[0])) {
@@ -418,6 +448,9 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
             myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             locationManager.removeUpdates(this)
         }
+
+        isRequestingZoom = false
+        locationUpdating.visibility = View.GONE
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
@@ -430,13 +463,28 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     }
 
     fun updateLocation(latitude: Double, longitude: Double) {
+
+        locationUpdating.visibility = View.GONE
+
         val latLng = LatLng(latitude, longitude)
-//        myMap.addMarker(MarkerOptions().position(latLng).title("you kill me every time..."))
-        myMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-//        polyline!!.points.add(latLng)
+
         val tmp = polyline!!.points
         tmp.add(latLng)
         polyline!!.points = tmp
+
+        val keepCenter = preferences.getBoolean(getString(R.string.pref_center_map), true)
+        if (keepCenter) {
+            myMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+        }
+
+        var icon =
+        currentPositionMarker?.remove()
+        currentPositionMarker = myMap.addMarker(
+            MarkerOptions()
+                .position(latLng)
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("curr_pos_marker", 100, 100)))
+                .anchor(0.5f, 0.5f)
+        )
     }
 
     fun placeCp(latitude: Double, longitude: Double) {
@@ -445,8 +493,13 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
             MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("cp_marker", 150, 150)))
+                .anchor(0.3f, 1f)
         )
-        myMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+
+        val keepCenter = preferences.getBoolean(getString(R.string.pref_center_map), true)
+        if (keepCenter) {
+            myMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+        }
     }
 
     fun placeWp(latitude: Double, longitude: Double) {
@@ -456,8 +509,13 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
             MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.fromBitmap(resizeBitmap("wp_marker", 150, 150)))
+                .anchor(0.5f, 0.8f)
         )
-        myMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+
+        val keepCenter = preferences.getBoolean(getString(R.string.pref_center_map), true)
+        if (keepCenter) {
+            myMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+        }
     }
 
     private fun applySettings() {
