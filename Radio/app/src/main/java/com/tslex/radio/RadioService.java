@@ -265,7 +265,8 @@ public class RadioService extends Service implements
                     LocalBroadcastManager.getInstance(getApplicationContext())
                             .sendBroadcast(new Intent(IntentActions.INTENT_PLAYER_STOPPED.getAction()));
 
-                    onDestroy();
+                    stopSelf();
+
                 } else if (action.equals(IntentActions.INTENT_PLAYER_UPDATE.getAction())) {
                     Log.d(TAG, "UPDATE REQUEST");
                     if (player.isPlaying()){

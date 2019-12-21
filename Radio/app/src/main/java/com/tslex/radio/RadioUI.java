@@ -60,6 +60,8 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
     private WebReqHandler handler;
 
+    private boolean isRestoring = false;
+
     private Button playButton;
     private Button statisticButton;
     private ImageView stationImage;
@@ -139,21 +141,18 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
             }
         }
     }
-
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: unregister broadcast manager");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver);
         super.onDestroy();
     }
-
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause: unregister broadcast manager");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(localReceiver);
         super.onPause();
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -202,8 +201,7 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         RadioStation anison = new RadioStation(
                 "Anison.FM",
                 "http://anison.fm/status.php?widget=false",
-                "http://sky.babahhcdn.com/SKY",
-//                "http://pool.anison.fm:9000/AniSonFM(128)",
+                "http://pool.anison.fm:9000/AniSonFM(128)",
                 "\\{.+:\\s+|<[^<>]*>( — )?( &#151; )?(\"\\})?"
         );
 
@@ -373,13 +371,15 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
         HistoryRepo historyRepository = new HistoryRepo(this).open();
 
         Log.d(TAG, "updateHistory: get song if exist");
-        StationHistory history = historyRepository.getOne(currentStation.getId(), currentSongTittle, currentArtistTitle);
+        StationHistory history = historyRepository.getOne(currentStation.getId(),
+                currentSongTittle.replace("'", ""),
+                currentArtistTitle.replace("'", ""));
 
         if (history == null) {
             Log.d(TAG, "updateHistory: no found song, add new one to history");
             historyRepository.add(new StationHistory(
-                    currentSongTittle,
-                    currentArtistTitle,
+                    currentSongTittle.replace("'", ""),
+                    currentArtistTitle.replace("'", ""),
                     currentStation.getId(),
                     1,
                     new java.sql.Timestamp(new Date().getTime())
@@ -407,8 +407,8 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
             Log.d(TAG, "getLastSong: no song found in history for this station");
         } else {
             Log.d(TAG, "getLastSong: found last");
-            currentArtistTitle = lastSong.getArtistName();
-            currentSongTittle = lastSong.getSongName();
+            currentArtistTitle = lastSong.getArtistName().replace("'", "");
+            currentSongTittle = lastSong.getSongName().replace("'", "");
         }
     }
 
@@ -429,11 +429,24 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
 
         Log.d(TAG, "onRestoreInstanceState");
 
+        isRestoring = true;
+
         status = (PlayerStatus) savedInstanceState.getSerializable("status");
 
         artistTitle.setText(savedInstanceState.getString("artistTitle"));
         songTitle.setText(savedInstanceState.getString("songTitle"));
         stationSpinner.setSelection(savedInstanceState.getInt("current_station_index"));
+
+        switch (status){
+            case PLAYER_STATUS_PLAYING:
+                artistTitle.setVisibility(View.VISIBLE);
+                songTitle.setVisibility(View.VISIBLE);
+                break;
+        }
+
+
+
+        updateUI();
 
         super.onRestoreInstanceState(savedInstanceState);
     }
@@ -442,9 +455,15 @@ public class RadioUI extends AppCompatActivity implements AdapterView.OnItemSele
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Log.d(TAG, "onItemSelected");
-        LocalBroadcastManager
-                .getInstance(getApplicationContext())
-                .sendBroadcast(new Intent(IntentActions.INTENT_UI_STOP.getAction()));
+
+//        if (!isRestoring){
+//            LocalBroadcastManager
+//                    .getInstance(getApplicationContext())
+//                    .sendBroadcast(new Intent(IntentActions.INTENT_UI_STOP.getAction()));
+//        }
+
+        isRestoring = false;
+
         currentStation = ((RadioStation) parent.getItemAtPosition(position));
         stationImage.setImageBitmap(currentStation.getStationBitmap());
 //        getLastSong();

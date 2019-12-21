@@ -41,9 +41,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     private lateinit var locationProvider: String
     private lateinit var criteria: Criteria
     private lateinit var preferences: SharedPreferences
-
-    lateinit var sensorManager: SensorManager
-    lateinit var accSensor: Sensor
+    private lateinit var sensorManager: SensorManager
+    private lateinit var accSensor: Sensor
 
     private val broadcastReceiver = UIBroadcastReceiver()
     private val intentFilter = IntentFilter()
@@ -62,6 +61,7 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     private var isRequestingZoom = false
     private var isRequestingRestore = false
     private var isNotEmpty = false
+    private var isPaused = false
 
     private var currentSession: Session? = null
 
@@ -134,8 +134,15 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
         if (isSessionStarted){
             buttonStart.visibility = View.GONE
-            buttonPause.visibility = View.VISIBLE
+            if (isPaused) {
+                buttonPause.visibility = View.GONE
+                buttonResume.visibility = View.VISIBLE
+            } else{
+                buttonPause.visibility = View.VISIBLE
+                buttonResume.visibility = View.GONE
+            }
 
+            setControlsButtonsEnabled(true)
             setPointsButtonsEnabled(true)
         }
 
@@ -162,7 +169,28 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
         isNotEmpty = intent.getBooleanExtra("notEmpty", false)
         isSessionStarted = intent.getBooleanExtra("sessionStarted", false)
-        isRequestingRestore = true
+        isPaused = intent.getBooleanExtra("sessionPaused", false)
+
+        if (isSessionStarted){
+            buttonStart.visibility = View.GONE
+            if (isPaused) {
+                buttonPause.visibility = View.GONE
+                buttonResume.visibility = View.VISIBLE
+            } else{
+                buttonPause.visibility = View.VISIBLE
+                buttonResume.visibility = View.GONE
+            }
+
+            setControlsButtonsEnabled(true)
+            setPointsButtonsEnabled(true)
+        }
+
+        if (isMapReady){
+            restoreMapData(0)
+        }
+        else{
+            isRequestingRestore = true
+        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -170,6 +198,7 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
         super.onRestoreInstanceState(savedInstanceState)
         isNotEmpty = savedInstanceState.getBoolean("notEmpty")
         isSessionStarted = savedInstanceState.getBoolean("sessionStarted")
+        isPaused = savedInstanceState.getBoolean("sessionPaused")
         isRequestingRestore = true
 
         totalTime.text =    savedInstanceState.getString("totalTime") ?: "00:00:00"
@@ -193,9 +222,7 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
 
         outState.putBoolean("notEmpty", isNotEmpty)
         outState.putBoolean("sessionStarted", isSessionStarted)
-
-//        LocalBroadcastManager.getInstance(applicationContext)
-//            .unregisterReceiver(broadcastReceiver)
+        outState.putBoolean("sessionPaused", isPaused)
 
         val sessions = SessionRepo(this).open()
         if (currentSession == null){
@@ -326,6 +353,8 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     }
 
     fun onPauseButtonClicked(view: View) {
+        isPaused = true
+
         LocalBroadcastManager.getInstance(applicationContext)
             .sendBroadcast(Intent(Intents.INTENT_TRACKING_PAUSE.getAction()))
 
@@ -334,6 +363,7 @@ class UI : AppCompatActivity(), OnMapReadyCallback, LocationListener, SensorEven
     }
 
     fun onResumeButtonClicked(view: View) {
+        isPaused = false
 
         locationUpdating.visibility = View.VISIBLE
 

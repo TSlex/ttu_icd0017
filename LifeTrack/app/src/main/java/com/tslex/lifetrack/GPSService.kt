@@ -40,6 +40,8 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
     private lateinit var currentSession: Session
 
+    private var isSessionPaused = false
+
     private var lastLocation: Location? = null
     private var firstLocation: Location? = null
     private var unsureLocation: Location? = null
@@ -76,7 +78,9 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
         LocalBroadcastManager.getInstance(applicationContext)
             .unregisterReceiver(broadcastReceiver)
 
-        unregisterReceiver(broadcastReceiver)
+        try {
+            unregisterReceiver(broadcastReceiver)
+        } catch (ignored: Exception){}
 
         stopListener()
         NotificationManagerCompat.from(this).cancel(1)
@@ -334,6 +338,7 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
         val intent = Intent(this, UI::class.java)
         intent.putExtra("sessionStarted", true)
+        intent.putExtra("sessionPaused", isSessionPaused)
         intent.putExtra("notEmpty", true)
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
@@ -463,14 +468,18 @@ class GPSService : Service(), LocationListener, GpsStatus.Listener {
 
             when (action) {
                 Intents.INTENT_TRACKING_RESUME.getAction() -> {
+                    isSessionPaused = false
                     startListener()
                 }
                 Intents.INTENT_TRACKING_PAUSE.getAction() -> {
+                    isSessionPaused = true
                     stopListener()
                 }
                 Intents.INTENT_TRACKING_STOP.getAction() -> {
+                    isSessionPaused = false
                     stopListener()
                     onDestroy()
+                    stopSelf()
                 }
                 Intents.INTENT_ADD_WP.getAction() -> {
 //                    val latitude = intent.getDoubleExtra("lat", .0)
